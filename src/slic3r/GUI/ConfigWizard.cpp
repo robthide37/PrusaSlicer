@@ -1973,7 +1973,7 @@ void ConfigWizard::priv::load_pages()
     if (any_sla_selected) { index->add_page(page_sla_materials); }
 
     // there should to be selected at least one printer
-    btn_finish->Enable(any_fff_selected || any_sla_selected || custom_printer_selected);
+   // btn_finish->Enable(any_fff_selected || any_sla_selected || custom_printer_selected);
 
     index->add_page(page_update);
     index->add_page(page_reload_from_disk);

@@ -258,6 +258,13 @@ public:
 	void            calibration_retraction_dialog();
     void            freecad_script_dialog();
     void            tiled_canvas_dialog();
+
+    // CR-3D Calibration Dialogs
+    void calibration_cr3d_cube_dialog();
+    void calibration_cr3d_samplecard_dialog();
+    void calibration_cr3d_masterspool_dialog();
+    void calibration_cr3d_idex_dialog();
+
     //void            support_tuning(); //have to do multiple, in a submenu
     void            load_project(wxWindow *parent, wxString& input_file) const;
     void            import_model(wxWindow *parent, wxArrayString& input_files) const;

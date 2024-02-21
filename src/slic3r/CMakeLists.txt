@@ -32,6 +32,9 @@ set(SLIC3R_GUI_SOURCES
     GUI/CalibrationCubeDialog.hpp
     GUI/CalibrationFlowDialog.cpp
     GUI/CalibrationFlowDialog.hpp
+    GUI/CalibrationCr3dDialog.cpp
+    GUI/CalibrationCr3dDialog.hpp
+
     GUI/CalibrationOverBridgeDialog.cpp
     GUI/CalibrationOverBridgeDialog.hpp
     GUI/CalibrationTempDialog.cpp

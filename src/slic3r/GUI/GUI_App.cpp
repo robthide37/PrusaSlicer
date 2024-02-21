@@ -66,6 +66,7 @@
 #include "CalibrationOverBridgeDialog.hpp"
 #include "CalibrationTempDialog.hpp"
 #include "CalibrationRetractionDialog.hpp"
+#include "CalibrationCr3dDialog.hpp"
 #include "ConfigSnapshotDialog.hpp"
 #include "CreateMMUTiledCanvas.hpp"
 #include "FreeCADDialog.hpp"
@@ -1953,6 +1954,27 @@ void GUI_App::tiled_canvas_dialog()
 {
     change_calibration_dialog(nullptr, new CreateMMUTiledCanvas(this, mainframe));
 }
+
+void GUI_App::calibration_cr3d_cube_dialog()
+{
+    change_calibration_dialog(nullptr, new CalibrationCr3dCubeDialog(this, mainframe));
+}
+
+void GUI_App::calibration_cr3d_samplecard_dialog()
+{
+    change_calibration_dialog(nullptr, new CalibrationCr3dSampleCardDialog(this, mainframe));
+}
+
+void GUI_App::calibration_cr3d_masterspool_dialog()
+{
+    change_calibration_dialog(nullptr, new CalibrationCr3dMasterSpoolDialog(this, mainframe));
+}
+
+void GUI_App::calibration_cr3d_idex_dialog()
+{
+    change_calibration_dialog(nullptr, new CalibrationCr3dIDEXDialog(this, mainframe));
+}
+
 
 // static method accepting a wxWindow object as first parameter
 bool GUI_App::catch_error(std::function<void()> cb,
