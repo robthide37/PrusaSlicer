@@ -1972,6 +1972,7 @@ void MainFrame::init_menubar_as_editor()
     }
 
     // objects menu
+    /*
     wxMenu* generationMenu = nullptr;
     if (wxGetApp().is_editor())
     {
@@ -1985,6 +1986,7 @@ void MainFrame::init_menubar_as_editor()
             [this](wxCommandEvent&) { wxGetApp().tiled_canvas_dialog(); });
 
     }
+    */
 
     // Help menu
     auto helpMenu = generate_help_menu();
@@ -1998,7 +2000,7 @@ void MainFrame::init_menubar_as_editor()
     m_menubar->Append(windowMenu, _L("&Window"));
     if (viewMenu) m_menubar->Append(viewMenu, _L("&View"));
     if (m_calibration_menu) m_menubar->Append(m_calibration_menu, _L("C&alibration"));
-    if (generationMenu) m_menubar->Append(generationMenu, _L("&Generate"));
+    //if (generationMenu) m_menubar->Append(generationMenu, _L("&Generate"));
     // Add additional menus from C++
     wxGetApp().add_config_menu(m_menubar);
     m_menubar->Append(helpMenu, _L("&Help"));

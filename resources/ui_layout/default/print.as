@@ -22,48 +22,6 @@ void s_overhangs_set(bool set)
 	}
 }
 
-// Get Extruders count
-
-
-int nozzle_diameter_get()
-{
-	float bw = get_float("nozzle_diameter");
-	if (bw > 0) {
-		last_brim_val = bw;
-		return 1;
-	}
-	return 0;
-}
-
-void nozzle_diameter_set(float new_val)
-{
-		float bw = get_float("nozzle_diameter");
-		set_float("nozzle_diameter", last_brim_val);
-
-}
-
-int extruders_count_get() {
-    int extruders_count = get_int("extruders_count");
-	return extruders_count;
-}
-
-void extruders_count_set(int set) {
-	int bw = get_int("extruders_count");
-	set_int("extruders_count", bw );
-	set_custom_int(2, "extruders_count", bw);
-}
-
-void fill_pattern_get(string &in key, string &out get_val) {
-	string patternStr;
-	string pattern = get_string("fill_pattern", patternStr);
-}
-
-void fill_pattern_set(string &in key, string &in new_val) {
-	
-}
-
-
-
 // "not thick bridge" like in prusaslicer
 
 float compute_overlap()
