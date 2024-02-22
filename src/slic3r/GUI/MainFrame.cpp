@@ -1966,9 +1966,16 @@ void MainFrame::init_menubar_as_editor()
             [this](wxCommandEvent&) { wxGetApp().calibration_cube_dialog(); });
 
         m_calibration_menu->AppendSeparator();
-        append_menu_item(m_calibration_menu, wxID_ANY, _(L("Calibration cube")),
-                         _(L("Print a calibration cube, for various calibration goals.")),
-                         [this](wxCommandEvent &) { wxGetApp().calibration_cube_dialog(); });
+        append_menu_item(m_calibration_menu, wxID_ANY, _(L("CR3D Cube")),
+                         _(L("Print a calibration CR3D cube, for various calibration goals.")),
+                         [this](wxCommandEvent &) { wxGetApp().calibration_cr3d_cube_dialog(); });
+        append_menu_item(m_calibration_menu, wxID_ANY, _(L("CR3D Samplecard")),
+                         _(L("Print a calibration CR3D samplecard, for various calibration goals.")),
+                         [this](wxCommandEvent &) { wxGetApp().calibration_cr3d_samplecard_dialog(); });
+        append_menu_item(m_calibration_menu, wxID_ANY, _(L("CR3D IDEX")),
+                         _(L("Calibration for CR3D IDEX printers, for various calibration goals.")),
+                         [this](wxCommandEvent &) { wxGetApp().calibration_cr3d_idex_dialog(); });
+    
     }
 
     // objects menu
