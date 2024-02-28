@@ -4,7 +4,6 @@ project(Slic3r)
 include("version.inc")
 include(GNUInstallDirs)
 include(CMakeDependentOption)
-
 set(SLIC3R_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 file(TO_NATIVE_PATH "${SLIC3R_RESOURCES_DIR}" SLIC3R_RESOURCES_DIR_WIN)
 
@@ -12,6 +11,8 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "No build type selected, default to Release")
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type (default Release)" FORCE)
 endif()
+
+
 
 if(DEFINED ENV{SLIC3R_STATIC})
         set(SLIC3R_STATIC_INITIAL $ENV{SLIC3R_STATIC})
@@ -601,6 +602,16 @@ function(prusaslicer_copy_dlls target)
         COMMENT "Copy mpfr runtime to build tree"
         VERBATIM)
 
+        add_custom_command(TARGET ${target} POST_BUILD 
+        COMMAND ${CMAKE_COMMAND} -E copy ${TOP_LEVEL_PROJECT_DIR}/deps/WebView2/lib/win${_bits}/WebView2Loader.dll ${_out_dir}
+        COMMENT "Copy mpfr runtime to build tree"
+        VERBATIM)
+
+     set(${output_dlls}
+     ${_out_dir}/WebView2Loader.dll
+     PARENT_SCOPE
+     )
+
 endfunction()
 
 
@@ -687,6 +698,8 @@ else ()
     set(CPACK_STRIP_FILES "bin/${SLIC3R_APP_CMD}")
     set(CPACK_SYSTEM_NAME "Linux-x86_64")
     set(CPACK_TOPLEVEL_TAG "Linux-x86_64")
+    set(CPACK_WIX_UPGRADE_GUID "058245e8-20e0-4a95-9ab7-1acfe17ad511")
+
 endif()
 
 include(CPack)

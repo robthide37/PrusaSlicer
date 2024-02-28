@@ -1,5 +1,5 @@
 #include "FreeCADDialog.hpp"
-
+/*
 #include "I18N.hpp"
 #include "libslic3r/AppConfig.hpp"
 #include "libslic3r/Model.hpp"
@@ -1007,3 +1007,4 @@ void FreeCADDialog::create_geometry(wxCommandEvent& event_args) {
 
 } // namespace GUI
 } // namespace Slic3r
+*/

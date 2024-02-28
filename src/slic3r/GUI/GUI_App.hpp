@@ -259,6 +259,11 @@ public:
     void            freecad_script_dialog();
     void            tiled_canvas_dialog();
 
+    // Webview
+    bool m_adding_script_handler{false};
+    bool is_adding_script_handler() { return m_adding_script_handler; }
+    void set_adding_script_handler(bool status) { m_adding_script_handler = status; }
+
     // CR-3D Calibration Dialogs
     void calibration_cr3d_cube_dialog();
     void calibration_cr3d_samplecard_dialog();

@@ -22,7 +22,10 @@ if (SLIC3R_ENABLE_FORMAT_STEP)
     add_subdirectory(occt_wrapper)
 endif ()
 
+
 if (SLIC3R_GUI)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
     add_subdirectory(imgui)
     add_subdirectory(hidapi)
     include_directories(hidapi/include)
@@ -30,7 +33,6 @@ if (SLIC3R_GUI)
     include_directories(exif/include)
     add_subdirectory(angelscript)
     # include_directories(angelscript/include)
-
     if(WIN32)
         message(STATUS "WXWIN environment set to: $ENV{WXWIN}")
     elseif(UNIX)
@@ -41,13 +43,15 @@ if (SLIC3R_GUI)
             set(wxWidgets_USE_STATIC OFF)
         endif()
     endif()
+    set(wxWidgets_USE_DEBUG ON)
+    set(wxWidgets_USE_UNICODE ON)
 
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         set (wxWidgets_CONFIG_OPTIONS "--toolkit=gtk${SLIC3R_GTK}")
         if (SLIC3R_WX_STABLE)
-            find_package(wxWidgets 3.0 REQUIRED COMPONENTS base core adv html gl stc)
+            find_package(wxWidgets REQUIRED net aui base core adv html gl stc scintilla)
         else ()
-            find_package(wxWidgets 3.1 QUIET COMPONENTS base core adv html gl stc)
+            find_package(wxWidgets REQUIRED net aui base core adv html gl stc scintilla)
 
             if (NOT wxWidgets_FOUND)
                 message(FATAL_ERROR "\nCould not find wxWidgets 3.1.\n"
@@ -55,12 +59,13 @@ if (SLIC3R_GUI)
             endif ()
         endif ()
     else ()
-        find_package(wxWidgets 3.1 REQUIRED COMPONENTS html adv gl core base stc scintilla)
+        find_package(wxWidgets REQUIRED net aui html adv gl core base stc scintilla)
     endif ()
 
     if(UNIX)
         message(STATUS "wx-config path: ${wxWidgets_CONFIG_EXECUTABLE}")
     endif()
+
 
     include(${wxWidgets_USE_FILE})
 
@@ -224,8 +229,15 @@ if (WIN32)
     target_link_libraries(PrusaSlicer_app_gcodeviewer PRIVATE boost_headeronly)
 endif ()
 
+
+set(output_dlls_Release "")
+set(output_dlls_Debug "")
+set(output_dlls_RelWithDebInfo "")
+
 # Link the resources dir to where Slic3r GUI expects it
 if (WIN32)
+    add_custom_target(slic3rDllsCopy ALL DEPENDS Slic3r)
+
     if (CMAKE_CONFIGURATION_TYPES)
         foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
             file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${CONF}" WIN_CONF_OUTPUT_DIR)
@@ -240,6 +252,13 @@ if (WIN32)
                 VERBATIM
             )
         endforeach ()
+         if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+            prusaslicer_copy_dlls(slic3rDllsCopy "Debug" "d" output_dlls_Debug)
+        elseif("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
+            prusaslicer_copy_dlls(slic3rDllsCopy "RelWithDebInfo" "" output_dlls_Release)
+        else()
+            prusaslicer_copy_dlls(slic3rDllsCopy "Release" "" output_dlls_Release)
+        endif()
     else ()
         file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/resources" WIN_RESOURCES_SYMLINK)
         add_custom_command(TARGET Slic3r POST_BUILD
@@ -248,10 +267,6 @@ if (WIN32)
             VERBATIM
         )
     endif ()
-
-    # This has to be a separate target due to the windows command line lenght limits
-    add_custom_target(slic3rDllsCopy ALL DEPENDS Slic3r)
-    prusaslicer_copy_dlls(slic3rDllsCopy)
 
 else ()
     if (APPLE)

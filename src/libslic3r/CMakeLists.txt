@@ -227,7 +227,8 @@ add_library(libslic3r STATIC
     PrintObject.cpp
     PrintObjectSlice.cpp
     PrintRegion.cpp
-    PNGReadWrite.hpp
+
+        PNGReadWrite.hpp
     PNGReadWrite.cpp
     QuadricEdgeCollapse.cpp
     QuadricEdgeCollapse.hpp
