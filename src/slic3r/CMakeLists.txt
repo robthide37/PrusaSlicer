@@ -96,8 +96,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/Widgets/StepCtrl.hpp
     GUI/Widgets/ProgressBar.cpp
     GUI/Widgets/ProgressBar.hpp
-    GUI/Widgets/SideTools.cpp
-    GUI/Widgets/SideTools.hpp
     GUI/Widgets/WebView.cpp
     GUI/Widgets/WebView.hpp
     GUI/Widgets/ErrorMsgStaticText.cpp
@@ -296,8 +294,7 @@ set(SLIC3R_GUI_SOURCES
     GUI/ObjectDataViewModel.hpp
     GUI/Widgets/PopupWindow.cpp
         GUI/Widgets/PopupWindow.hpp
-        GUI/Widgets/SideTools.hpp
-        GUI/Widgets/SideTools.cpp
+
     GUI/InstanceCheck.cpp
     GUI/InstanceCheck.hpp
     GUI/Search.cpp

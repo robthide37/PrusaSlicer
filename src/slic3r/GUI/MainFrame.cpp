@@ -713,11 +713,10 @@ void MainFrame::update_layout()
         wxPanel* first_panel = new wxPanel(m_tabpanel);
         m_tabpanel->InsertPage(0, first_panel, _L("3D view"));
         m_tabpanel->InsertPage(1, new wxPanel(m_tabpanel), _L("Sliced preview"));
-        m_tabpanel->InsertPage(2, new wxPanel(m_tabpanel), _L("Gcode preview"));
-        if (m_tabpanel->GetPageCount() == 6) {
+
+        if (m_tabpanel->GetPageCount() == 5) {
             m_tabpanel->GetPage(0)->SetSizer(new wxBoxSizer(wxVERTICAL));
             m_tabpanel->GetPage(1)->SetSizer(new wxBoxSizer(wxVERTICAL));
-            m_tabpanel->GetPage(2)->SetSizer(new wxBoxSizer(wxVERTICAL));
             update_icon();
         }
         m_plater->Reparent(first_panel);
@@ -1112,15 +1111,15 @@ void MainFrame::init_tabpanel()
             size_t new_tab = m_tabpanel->GetSelection();
 
             size_t max = 0;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 2; i++)
                 max = std::max(max, m_tabpanel->GetPage(i)->GetSizer()->GetItemCount());
 #ifdef __APPLE__
             BOOST_LOG_TRIVIAL(debug) << " 1 - hide & clear the sizers: " << max << "->";
 #endif
-            for(int i=0;i<3;i++)
+            for(int i=0;i<2;i++)
                 m_tabpanel->GetPage(i)->GetSizer()->Clear();
             max = 0;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 2; i++)
                 max = std::max(max, m_tabpanel->GetPage(i)->GetSizer()->GetItemCount());
 #ifdef __APPLE__
             BOOST_LOG_TRIVIAL(debug) << max << "\n";
@@ -1137,38 +1136,25 @@ void MainFrame::init_tabpanel()
                     this->m_plater->set_force_preview(Preview::ForceState::ForceExtrusions);
                     this->m_plater->select_view_3D("Preview");
                     this->m_plater->refresh_print();
-                }else
-                    this->m_plater->select_view_3D("Preview");
-            }
-            else if (m_tabpanel->GetSelection() == 2) {
+                }
+            } else if (m_tabpanel->GetSelection() == 0) {
                 if (this->m_plater->get_force_preview() != Preview::ForceState::ForceGcode) {
                     this->m_plater->set_force_preview(Preview::ForceState::ForceGcode);
                     this->m_plater->select_view_3D("Preview");
                     this->m_plater->refresh_print();
-                }else
-                    this->m_plater->select_view_3D("Preview");
+                }
             }
-#ifdef __APPLE__
-            BOOST_LOG_TRIVIAL(debug) << " 3 - redraw\n";
-            BOOST_LOG_TRIVIAL(debug) << " 4 - add to new sizer: " << m_tabpanel->GetCurrentPage()->GetSizer()->GetItemCount() << "->";
-#endif
+
+
             m_tabpanel->GetCurrentPage()->GetSizer()->Add(m_plater, 1, wxEXPAND);
-#ifdef __APPLE__
-            BOOST_LOG_TRIVIAL(debug) << m_tabpanel->GetCurrentPage()->GetSizer()->GetItemCount() << "\n";
-#endif
+
             m_plater->Show();
-#ifdef __APPLE__
-            BOOST_LOG_TRIVIAL(debug) << "End of change for the panel position & content, tab is "<< m_tabpanel->GetSelection() <<"\n";
-#endif
+
             m_last_selected_plater_tab = m_tabpanel->GetSelection();
 
             if (need_freeze) Thaw();
             else if (need_freeze_plater) m_plater->Thaw();
-#ifdef __APPLE__
-            m_tabpanel->ChangeSelection(new_tab);
-            m_tabpanel->Refresh();
-            BOOST_LOG_TRIVIAL(debug) << "Macos: force tab selection to  "<< new_tab <<" : " << m_tabpanel->GetSelection() << "\n";
-#endif
+
             m_plater->SetFocus();
 #endif
         } else {
@@ -2532,10 +2518,10 @@ MainFrame::ETabType MainFrame::selected_tab() const
             return ETabType((uint8_t)ETabType::PrintSettings + bt_idx_sel - 3);
         }
 #else
-        if (m_tabpanel->GetSelection() < 3) {
+        if (m_tabpanel->GetSelection() < 2) {
             return ETabType((uint8_t)ETabType::Plater3D + m_tabpanel->GetSelection());
         } else {
-            return ETabType((uint8_t)ETabType::PrintSettings + m_tabpanel->GetSelection() - 3);
+            return ETabType((uint8_t)ETabType::PrintSettings + m_tabpanel->GetSelection() - 2);
         }
 #endif
     } else if (m_layout == ESettingsLayout::Hidden) {
@@ -2592,7 +2578,7 @@ void MainFrame::select_tab(ETabType tab /* = Any*/, bool keep_tab_type)
                 new_selection = m_last_selected_setting_tab > 2 ? 0 : m_last_selected_setting_tab;
             //push to the correct position
             if (m_layout == ESettingsLayout::Tabs)
-                new_selection = new_selection + 3;
+                new_selection = new_selection + 2;
             else if (m_layout != ESettingsLayout::Dlg)
                 new_selection = new_selection + 1;
         }
@@ -2666,8 +2652,7 @@ void MainFrame::select_tab(ETabType tab /* = Any*/, bool keep_tab_type)
             m_plater->select_view_3D("3D");
         } else if (tab == ETabType::PlaterPreview || (tab == ETabType::LastPlater && m_last_selected_plater_tab == 1)) {
             m_plater->select_view_3D("Preview");
-        } else if (tab == ETabType::PlaterGcode || (tab == ETabType::LastPlater && m_last_selected_plater_tab == 2)) {
-            m_plater->select_view_3D("Preview");
+        
         }
     }
 
