@@ -10,6 +10,3 @@ group:freq_settings_event:no_title:no_search:
 		#setting:simple:script:bool:depends$brim_width:label$Brim:tooltip$Set the brim. Will be set to 5mm if nothing was previously set.:s_brim
 		freq_purging_volumes
 	end_line
-	line:
-		setting:simple:script:string:depends$fill_pattern:label$Fill Pattern:tooltip$Sets the general fill pattern..:fill_pattern
-	end_line

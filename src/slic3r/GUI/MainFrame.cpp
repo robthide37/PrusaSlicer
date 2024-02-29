@@ -1952,12 +1952,20 @@ void MainFrame::init_menubar_as_editor()
             [this](wxCommandEvent&) { wxGetApp().calibration_cube_dialog(); });
 
         m_calibration_menu->AppendSeparator();
-        append_menu_item(m_calibration_menu, wxID_ANY, _(L("Calibration cube")),
-                         _(L("Print a calibration cube, for various calibration goals.")),
-                         [this](wxCommandEvent &) { wxGetApp().calibration_cube_dialog(); });
+        append_menu_item(m_calibration_menu, wxID_ANY, _(L("CR3D Cube")),
+                         _(L("Print a calibration CR3D cube, for various calibration goals.")),
+                         [this](wxCommandEvent &) { wxGetApp().calibration_cr3d_cube_dialog(); });
+        append_menu_item(m_calibration_menu, wxID_ANY, _(L("CR3D Samplecard")),
+                         _(L("Print a calibration CR3D samplecard, for various calibration goals.")),
+                         [this](wxCommandEvent &) { wxGetApp().calibration_cr3d_samplecard_dialog(); });
+        append_menu_item(m_calibration_menu, wxID_ANY, _(L("CR3D IDEX")),
+                         _(L("Calibration for CR3D IDEX printers, for various calibration goals.")),
+                         [this](wxCommandEvent &) { wxGetApp().calibration_cr3d_idex_dialog(); });
+    
     }
 
     // objects menu
+    /*
     wxMenu* generationMenu = nullptr;
     if (wxGetApp().is_editor())
     {
@@ -1971,6 +1979,7 @@ void MainFrame::init_menubar_as_editor()
             [this](wxCommandEvent&) { wxGetApp().tiled_canvas_dialog(); });
 
     }
+    */
 
     // Help menu
     auto helpMenu = generate_help_menu();
@@ -1984,7 +1993,7 @@ void MainFrame::init_menubar_as_editor()
     m_menubar->Append(windowMenu, _L("&Window"));
     if (viewMenu) m_menubar->Append(viewMenu, _L("&View"));
     if (m_calibration_menu) m_menubar->Append(m_calibration_menu, _L("C&alibration"));
-    if (generationMenu) m_menubar->Append(generationMenu, _L("&Generate"));
+    //if (generationMenu) m_menubar->Append(generationMenu, _L("&Generate"));
     // Add additional menus from C++
     wxGetApp().add_config_menu(m_menubar);
     m_menubar->Append(helpMenu, _L("&Help"));

@@ -264,6 +264,10 @@ set(SLIC3R_GUI_SOURCES
     GUI/FirmwareDialog.hpp
     GUI/PrintHostDialogs.cpp
     GUI/PrintHostDialogs.hpp
+
+    #GUI/Widgets/WebView.cpp
+    #GUI/Widgets/WebView.hpp
+
     GUI/Jobs/Job.hpp
     GUI/Jobs/Job.cpp
     GUI/Jobs/Worker.hpp
