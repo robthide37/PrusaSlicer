@@ -34,12 +34,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/CalibrationFlowDialog.hpp
     GUI/CalibrationCr3dDialog.cpp
     GUI/CalibrationCr3dDialog.hpp
-
-    GUI/PrinterWebView.hpp
-    GUI/PrinterWebView.cpp
-    GUI/WebView.cpp
-    GUI/WebView.hpp
-
     GUI/Widgets/AxisCtrlButton.cpp
     GUI/Widgets/AxisCtrlButton.hpp
     GUI/Widgets/Button.cpp
@@ -264,10 +258,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/FirmwareDialog.hpp
     GUI/PrintHostDialogs.cpp
     GUI/PrintHostDialogs.hpp
-
-    #GUI/Widgets/WebView.cpp
-    #GUI/Widgets/WebView.hpp
-
     GUI/Jobs/Job.hpp
     GUI/Jobs/Job.cpp
     GUI/Jobs/Worker.hpp
@@ -285,8 +275,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/Jobs/ProgressIndicator.hpp
     GUI/Jobs/NotificationProgressIndicator.hpp
     GUI/Jobs/NotificationProgressIndicator.cpp
-    # GUI/ProgressStatusBar.hpp
-    # GUI/ProgressStatusBar.cpp
     GUI/Mouse3DController.cpp
     GUI/Mouse3DController.hpp
     GUI/DoubleSlider.cpp
@@ -297,7 +285,9 @@ set(SLIC3R_GUI_SOURCES
     GUI/ObjectDataViewModel.cpp
     GUI/ObjectDataViewModel.hpp
     GUI/Widgets/PopupWindow.cpp
-        GUI/Widgets/PopupWindow.hpp
+    GUI/Widgets/PopupWindow.hpp
+    GUI/HelloWebView.cpp
+    GUI/HelloWebView.hpp
 
     GUI/InstanceCheck.cpp
     GUI/InstanceCheck.hpp

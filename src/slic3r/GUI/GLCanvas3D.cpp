@@ -4797,7 +4797,7 @@ bool GLCanvas3D::_init_main_toolbar()
     item.enabling_callback    = GLToolbarItem::Default_Enabling_Callback;
     item.visibility_callback  = []() { return (wxGetApp().app_config->get("new_settings_layout_mode") == "1" ||
                                                    wxGetApp().app_config->get("dlg_settings_layout_mode") == "1"); };
-    item.left.action_callback = []() { wxGetApp().mainframe->select_tab(MainFrame::ETabType::LastSettings); };
+    item.left.action_callback = []() { wxGetApp().mainframe->select_tab(MainFrame::TabPosition::tpLastSettings); };
     if (!m_main_toolbar.add_item(item))
         return false;
 

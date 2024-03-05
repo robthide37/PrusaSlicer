@@ -61,7 +61,7 @@ std::vector<std::pair<double, uint16_t>> custom_tool_changes(const Info& custom_
     std::vector<std::pair<double, uint16_t>> custom_tool_changes;
     for (const Item& custom_gcode : custom_gcode_per_print_z.gcodes)
         if (custom_gcode.type == ToolChange) {
-            // If extruder count in PrinterSettings was changed, use default (0) extruder for extruders, more than num_extruders
+            // If extruder count in tpPrinterSettings was changed, use default (0) extruder for extruders, more than num_extruders
             assert(custom_gcode.extruder >= 0);
             custom_tool_changes.emplace_back(custom_gcode.print_z, static_cast<uint16_t>(size_t(custom_gcode.extruder) > num_extruders ? 1 : custom_gcode.extruder));
         }

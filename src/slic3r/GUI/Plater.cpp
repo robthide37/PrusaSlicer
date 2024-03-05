@@ -1138,7 +1138,7 @@ void Sidebar::jump_to_option(size_t selected)
     wxGetApp().get_tab(opt.type)->activate_option(opt.opt_key_with_idx(), boost::nowide::narrow(opt.category));
 
     // Switch to the Settings NotePad
-//    wxGetApp().mainframe->select_tab(MainFrame::ETabType::LastSettings);
+//    wxGetApp().mainframe->select_tab(MainFrame::ETabType::tpLastSettings);
 }
 
 ObjectManipulation* Sidebar::obj_manipul()
@@ -3413,18 +3413,18 @@ unsigned int Plater::priv::update_background_process(bool force_validation, bool
         // auto_switch_preview == 3 means "force tab change only if for gcode"
         if (wxGetApp().app_config->get("auto_switch_preview") == "3") {
             if (this->preview->can_display_gcode())
-                main_frame->select_tab(MainFrame::ETabType::PlaterGcode, true);
+                main_frame->select_tab(MainFrame::TabPosition::tpPlaterGCode, true);
             // auto_switch_preview == 1 means "force tab change"
         } else if (wxGetApp().app_config->get("auto_switch_preview") == "1") {
-            main_frame->select_tab(MainFrame::ETabType::Plater3D, true);
+            main_frame->select_tab(MainFrame::TabPosition::tpPlater, true);
             // auto_switch_preview == 2 means "force tab change only if already on a platter one"
-        } else if (wxGetApp().app_config->get("auto_switch_preview") == "2" || main_frame->selected_tab() < MainFrame::ETabType::LastPlater) {
+        } else if (wxGetApp().app_config->get("auto_switch_preview") == "2" || main_frame->selected_tab() < MainFrame::TabPosition::tpLastPlater) {
             if (this->preview->can_display_gcode())
-                main_frame->select_tab(MainFrame::ETabType::PlaterGcode, true);
+                main_frame->select_tab(MainFrame::TabPosition::tpPlaterGCode, true);
             else if (this->preview->can_display_volume() && background_process.running()) // don't switch to plater3D if you modify a gcode settign and you don't have background processing
-                main_frame->select_tab(MainFrame::ETabType::PlaterPreview, true);
+                main_frame->select_tab(MainFrame::TabPosition::tpPlaterPreview, true);
             else
-                main_frame->select_tab(MainFrame::ETabType::Plater3D, true);
+                main_frame->select_tab(MainFrame::TabPosition::tpPlater, true);
         }
     }
     return return_state;
@@ -4160,9 +4160,9 @@ void Plater::priv::on_slicing_update(SlicingStatusEvent &evt)
 
 void Plater::priv::on_slicing_completed(wxCommandEvent & evt)
 {
-    if( ( wxGetApp().app_config->get("auto_switch_preview") == "1" || (wxGetApp().app_config->get("auto_switch_preview") == "2" && main_frame->selected_tab() < MainFrame::ETabType::LastPlater) )
+    if( ( wxGetApp().app_config->get("auto_switch_preview") == "1" || (wxGetApp().app_config->get("auto_switch_preview") == "2" && main_frame->selected_tab() < MainFrame::TabPosition::tpLastPlater) )
         && !this->preview->can_display_gcode())
-        main_frame->select_tab(MainFrame::ETabType::PlaterPreview);
+        main_frame->select_tab(MainFrame::TabPosition::tpPlaterPreview);
 
     if (view3D->is_dragging()) // updating scene now would interfere with the gizmo dragging
         delayed_scene_refresh = true;
@@ -4257,9 +4257,9 @@ void Plater::priv::on_process_completed(SlicingProcessCompletedEvent &evt)
     // auto_switch_preview == 2 means "force tab change only if already on a plater one"
     // auto_switch_preview == 3 means "force tab change only if for gcode"
     if (wxGetApp().app_config->get("auto_switch_preview") == "1" 
-        || (wxGetApp().app_config->get("auto_switch_preview") == "2" && main_frame->selected_tab() < MainFrame::ETabType::LastPlater) 
+        || (wxGetApp().app_config->get("auto_switch_preview") == "2" && main_frame->selected_tab() < MainFrame::TabPosition::tpLastPlater) 
         || wxGetApp().app_config->get("auto_switch_preview") == "3")
-        main_frame->select_tab(MainFrame::ETabType::PlaterGcode);
+        main_frame->select_tab(MainFrame::TabPosition::tpPlaterGCode);
 
     // Reset the "export G-code path" name, so that the automatic background processing will be enabled again.
     this->background_process.reset_export();

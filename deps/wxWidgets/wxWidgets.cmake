@@ -1,4 +1,4 @@
-set(_wx_git_tag v3.1.5)
+set(_wx_git_tag v3.2.1)
 
 set(_wx_toolkit "")
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -14,6 +14,7 @@ if (MSVC)
 else ()
     set(_wx_edge "-DwxUSE_WEBVIEW_EDGE=OFF")
 endif ()
+
 
 prusaslicer_add_cmake_project(wxWidgets
     wxWidgets
