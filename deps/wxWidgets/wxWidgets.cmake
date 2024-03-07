@@ -1,4 +1,4 @@
-set(_wx_git_tag v3.2.1)
+set(_wx_git_tag v3.2.4)
 
 set(_wx_toolkit "")
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -36,7 +36,9 @@ prusaslicer_add_cmake_project(wxWidgets
         -DwxUSE_OPENGL=ON
         -DwxUSE_WEBVIEW=ON
         ${_wx_edge}
-        -DwxUSE_WEBVIEW_IE=OFF
+
+        -DwxUSE_WEBVIEW_IE=ON
+        -DwxUSE_WEBVIEW_WEBKIT=ON
         -DwxUSE_REGEX=builtin
         -DwxUSE_LIBXPM=builtin
         -DwxUSE_LIBSDL=OFF

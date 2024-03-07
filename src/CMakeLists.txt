@@ -25,7 +25,7 @@ endif ()
 
 if (SLIC3R_GUI)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
     add_subdirectory(imgui)
     add_subdirectory(hidapi)
     include_directories(hidapi/include)
@@ -45,13 +45,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
     endif()
     set(wxWidgets_USE_DEBUG ON)
     set(wxWidgets_USE_UNICODE ON)
+    #set(wxUSE_COMPILER_TLS=1)
+    set(wxUSE_WEBVIEW_EDGE ON)
+    set(wxUSE_WEBVIEW_WEBKIT ON)
+
 
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         set (wxWidgets_CONFIG_OPTIONS "--toolkit=gtk${SLIC3R_GTK}")
         if (SLIC3R_WX_STABLE)
-            find_package(wxWidgets REQUIRED net aui base core adv html gl stc scintilla)
+            find_package(wxWidgets REQUIRED net aui base core adv html gl stc scintilla webview)
         else ()
-            find_package(wxWidgets REQUIRED net aui base core adv html gl stc scintilla)
+            find_package(wxWidgets REQUIRED net aui base core adv html gl stc scintilla webview)
 
             if (NOT wxWidgets_FOUND)
                 message(FATAL_ERROR "\nCould not find wxWidgets 3.1.\n"
@@ -59,7 +63,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
             endif ()
         endif ()
     else ()
-        find_package(wxWidgets REQUIRED net aui html adv gl core base stc scintilla)
+        find_package(wxWidgets REQUIRED net aui html adv gl core base stc scintilla webview)
     endif ()
 
     if(UNIX)
@@ -102,6 +106,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
         list(APPEND wxWidgets_LIBRARIES ${LIBRT})
     endif()
 
+
     # This fixes a OpenGL linking issue on OSX. wxWidgets cmake build includes
     # wrong libs for opengl in the link line and it does not link to it by himself.
     # libslic3r_gui will link to opengl anyway, so lets override wx
@@ -109,6 +114,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #    list(REMOVE_ITEM wxWidgets_LIBRARIES oleacc)
     message(STATUS "wx libs: ${wxWidgets_LIBRARIES}")
+
 
     add_subdirectory(slic3r)
 endif()
@@ -163,7 +169,7 @@ endif ()
 
 # Add the Slic3r GUI library, libcurl, OpenGL and GLU libraries.
 if (SLIC3R_GUI)
-#    target_link_libraries(PrusaSlicer ws2_32 uxtheme setupapi libslic3r_gui ${wxWidgets_LIBRARIES})
+    target_link_libraries(Slic3r ws2_32 uxtheme setupapi libslic3r_gui ${wxWidgets_LIBRARIES})
 target_link_libraries(Slic3r libslic3r_gui)
     if (MSVC)
         # Generate debug symbols even in release mode.
