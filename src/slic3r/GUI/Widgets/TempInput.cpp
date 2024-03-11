@@ -106,7 +106,7 @@ void TempInput::Create(wxWindow *parent, wxString text, wxString label, wxString
             Warning(false, WARNING_TOO_LOW);
         }
         SetFinish();
-        Slic3r::GUI::wxGetApp().GetMainTopWindow()->SetFocus();
+       // Slic3r::GUI::wxGetApp().GetMainTopWindow()->SetFocus();
     });
     text_ctrl->Bind(wxEVT_RIGHT_DOWN, [this](auto &e) {}); // disable context menu
     text_ctrl->Bind(wxEVT_LEFT_DOWN, [this](auto &e) {

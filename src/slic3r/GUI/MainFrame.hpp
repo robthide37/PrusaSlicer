@@ -25,7 +25,6 @@
 
 class wxBookCtrlBase;
 class wxProgressDialog;
-class WebView2Panel;
 class MyPanel;
 
 using namespace Microsoft::WRL;
@@ -152,6 +151,7 @@ public:
         tpPlaterPreview,
         tpPlaterGCode,
         tpLastPlater,
+        tpDevice,
         tpPrintSettings,
         tpFilamentSettings,
         tpPrinterSettings,
@@ -238,7 +238,8 @@ public:
     wxBookCtrlBase*       m_tabpanel { nullptr };
     wxPanel*              m_devicePanel {nullptr};
     
-  
+    wxWebView*             m_webView{nullptr};
+    WebViewPanel          *m_webViewPanel{nullptr};
    
     bool                  m_tabpanel_stop_event = false;
     SettingsDialog        m_settings_dialog;

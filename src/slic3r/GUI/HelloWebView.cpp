@@ -1,55 +1,43 @@
-#include "MyWebView.hpp"
+// Webview Panel created by Steve.
+#include "HelloWebView.hpp"
+#include <wx/webview.h>
+#include <wx/msw/webview_edge.h>
+#include <wx/msw/webview_ie.h>
+#include <WebView2.h>
 
-wxBEGIN_EVENT_TABLE(MyWebView, wxPanel) EVT_SIZE(MyWebView::OnSize) wxEND_EVENT_TABLE()
 
-    MyWebView::MyWebView(wxWindow *parent, const wxString &initialUrl, const wxPoint &pos, const wxSize &size)
-    : wxPanel(parent, wxID_ANY, pos, size)
+namespace Slic3r {
+namespace GUI {
+
+WebViewPanel::WebViewPanel(wxWindow *parent, const wxString &initialUrl) : wxPanel(parent, wxID_ANY)
 {
-    CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
-    CreateCoreWebView2Environment(
-        Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-            [this, initialUrl](HRESULT result, ICoreWebView2Environment *env) -> HRESULT {
-                if (SUCCEEDED(result)) {
-                    env->CreateCoreWebView2Controller(
-                        GetHWND(),
-                        Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
-                            [this, initialUrl](HRESULT result, ICoreWebView2Controller *controller) -> HRESULT {
-                                if (SUCCEEDED(result)) {
-                                    m_controller = controller;
-                                    m_controller->get_CoreWebView2(&m_webView);
-                                    m_webView->put_IsVisible(TRUE);
-                                    Resize(size.GetWidth(), size.GetHeight());
-                                    Navigate(initialUrl);
-                                }
-                                return S_OK;
-                            })
-                            .Get());
-                }
-                return S_OK;
-            })
-            .Get());
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+
+    m_webView = CreateWebView(parent, initialUrl);
+    sizer->Add(m_webView, 1, wxEXPAND | wxALL, 5);
 }
 
-MyWebView::~MyWebView() { CoUninitialize(); }
-
-void MyWebView::Navigate(const wxString &url)
+WebViewPanel::~WebViewPanel()
 {
-    if (m_webView) {
-        m_webView->Navigate(url.wc_str());
-    }
+
 }
 
-void MyWebView::Resize(int width, int height)
-{
-    if (m_controller) {
-        m_controller->put_Bounds({0, 0, width, height});
-    }
+wxWebView* WebViewPanel::CreateWebView(wxWindow* parent, const wxString& initialUrl) {
+
+    wxWebViewIE::MSWSetEmulationLevel(wxWEBVIEWIE_EMU_IE10);
+    wxWebView *webview = wxWebView::New(parent, wxID_ANY, initialUrl, wxDefaultPosition, wxDefaultSize,
+                                        wxWebViewBackendIE);
+
+    webview->LoadURL(initialUrl);
+    webview->EnableContextMenu(true);
+    webview->EnableAccessToDevTools(true);
+
+    return webview;
+
 }
 
-void MyWebView::OnSize(wxSizeEvent &event)
-{
-    wxSize size = event.GetSize();
-    Resize(size.GetWidth(), size.GetHeight());
-    event.Skip();
-}
+
+} // namespace GUI
+
+} // namespace Slic3r

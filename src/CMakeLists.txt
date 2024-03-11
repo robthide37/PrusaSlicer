@@ -45,9 +45,7 @@ set(CMAKE_CXX_STANDARD 17)
     endif()
     set(wxWidgets_USE_DEBUG ON)
     set(wxWidgets_USE_UNICODE ON)
-    #set(wxUSE_COMPILER_TLS=1)
     set(wxUSE_WEBVIEW_EDGE ON)
-    set(wxUSE_WEBVIEW_WEBKIT ON)
 
 
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")

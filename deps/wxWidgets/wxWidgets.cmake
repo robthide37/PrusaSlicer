@@ -1,5 +1,9 @@
 set(_wx_git_tag v3.2.4)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(_wx_toolkit "")
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(_gtk_ver 2)
@@ -35,7 +39,7 @@ prusaslicer_add_cmake_project(wxWidgets
         ${_wx_private_font}
         -DwxUSE_OPENGL=ON
         -DwxUSE_WEBVIEW=ON
-        ${_wx_edge}
+        -DwxUSE_WEBVIEW_EDGE=ON
 
         -DwxUSE_WEBVIEW_IE=ON
         -DwxUSE_WEBVIEW_WEBKIT=ON

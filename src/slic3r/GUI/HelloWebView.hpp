@@ -1,24 +1,27 @@
+#ifndef slic3r_HelloWebView_hpp_
+#define slic3r_HelloWebView_hpp_
+
 #include <wx/wx.h>
 #include <WebView2.h>
 #include <wil/com.h>
+#include <wx/webview.h>
+#include <wx/msw/webview_edge.h>
+#include <wx/msw/webview_ie.h>
 
-class MyWebView : public wxPanel
+namespace Slic3r { namespace GUI {
+
+class WebViewPanel : public wxPanel
 {
 public:
-    MyWebView(wxWindow *      parent,
-              const wxString &initialUrl,
-              const wxPoint & pos  = wxDefaultPosition,
-              const wxSize &  size = wxDefaultSize);
-    ~MyWebView();
+    WebViewPanel(wxWindow *parent, const wxString &initialUrl);
+    ~WebViewPanel();
 
-    void Navigate(const wxString &url);
-    void Resize(int width, int height);
+    wxWebView *CreateWebView(wxWindow* parent, const wxString &initialUrl);
+    wxWebView *m_webView;
 
 private:
-    void OnSize(wxSizeEvent &event);
 
-    wil::com_ptr<ICoreWebView2Controller> m_controller;
-    wil::com_ptr<ICoreWebView2>           m_webView;
-
-    wxDECLARE_EVENT_TABLE();
 };
+}
+}     // namespace Slic3r::GUI
+#endif // HelloWebView.hpp

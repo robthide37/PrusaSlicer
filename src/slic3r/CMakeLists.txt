@@ -90,8 +90,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/Widgets/StepCtrl.hpp
     GUI/Widgets/ProgressBar.cpp
     GUI/Widgets/ProgressBar.hpp
-    GUI/Widgets/WebView.cpp
-    GUI/Widgets/WebView.hpp
     GUI/Widgets/ErrorMsgStaticText.cpp
     GUI/Widgets/ErrorMsgStaticText.hpp
     GUI/CalibrationOverBridgeDialog.cpp
