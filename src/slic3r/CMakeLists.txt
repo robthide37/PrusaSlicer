@@ -12,6 +12,12 @@ include(PrecompiledHeader)
 set(SLIC3R_GUI_SOURCES
     pchheader.cpp
     pchheader.hpp
+    GUI/PrinterWebView.cpp   
+     GUI/PrinterWebView.hpp
+    GUI/CR3DWebView.cpp
+    GUI/CR3DWebView.hpp
+
+
     GUI/AboutDialog.cpp
     GUI/AboutDialog.hpp
     GUI/SysInfoDialog.cpp
@@ -284,9 +290,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/ObjectDataViewModel.hpp
     GUI/Widgets/PopupWindow.cpp
     GUI/Widgets/PopupWindow.hpp
-    GUI/HelloWebView.cpp
-    GUI/HelloWebView.hpp
-
     GUI/InstanceCheck.cpp
     GUI/InstanceCheck.hpp
     GUI/Search.cpp

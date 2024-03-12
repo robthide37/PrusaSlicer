@@ -9,7 +9,7 @@
 #include <wx/filehistory.h>
 #include <WebView2.h>
 #include <wx/wx.h>
-#include "HelloWebView.hpp"
+#include "PrinterWebView.hpp"
 #include <wil/com.h>
 
 #ifdef __APPLE__
@@ -238,9 +238,10 @@ public:
     wxBookCtrlBase*       m_tabpanel { nullptr };
     wxPanel*              m_devicePanel {nullptr};
     
-    wxWebView*             m_webView{nullptr};
-    WebViewPanel          *m_webViewPanel{nullptr};
-   
+    WebViewPanel*         m_webViewPanel{nullptr};
+    wxWebView*            m_webView{nullptr};
+
+
     bool                  m_tabpanel_stop_event = false;
     SettingsDialog        m_settings_dialog;
     DiffPresetDialog      diff_dialog;

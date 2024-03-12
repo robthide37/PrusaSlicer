@@ -1,11 +1,8 @@
-set(_wx_git_tag v3.2.4)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(_wx_git_tag v3.1.5)
 
 set(_wx_toolkit "")
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(_wx_private_font "-DwxUSE_PRIVATE_FONTS=1")
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(_gtk_ver 2)
     if (DEP_WX_GTK3)
         set(_gtk_ver 3)
@@ -19,8 +16,17 @@ else ()
     set(_wx_edge "-DwxUSE_WEBVIEW_EDGE=OFF")
 endif ()
 
+if (MSVC)
+    set(_patch_cmd if not exist WXWIDGETS_PATCHED ( "${GIT_EXECUTABLE}" apply --verbose --ignore-space-change --whitespace=fix ${CMAKE_CURRENT_LIST_DIR}/0001-wx-3.1.5-patch-for-Orca.patch && type nul > WXWIDGETS_PATCHED ) )
+else ()
+    set(_patch_cmd test -f WXWIDGETS_PATCHED || ${PATCH_CMD} ${CMAKE_CURRENT_LIST_DIR}/0001-wx-3.1.5-patch-for-Orca.patch && touch WXWIDGETS_PATCHED)
+endif ()
 
-prusaslicer_add_cmake_project(wxWidgets
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(_patch_cmd ${PATCH_CMD} ${CMAKE_CURRENT_LIST_DIR}/0001-wx-3.1.5-patch-for-Orca.patch)
+endif ()
+
+prusaslicer_add_cmake_project(
     wxWidgets
     GIT_REPOSITORY "https://github.com/wxWidgets/wxWidgets"
     GIT_TAG ${_wx_git_tag}
@@ -39,15 +45,13 @@ prusaslicer_add_cmake_project(wxWidgets
         ${_wx_private_font}
         -DwxUSE_OPENGL=ON
         -DwxUSE_WEBVIEW=ON
-        -DwxUSE_WEBVIEW_EDGE=ON
-
-        -DwxUSE_WEBVIEW_IE=ON
-        -DwxUSE_WEBVIEW_WEBKIT=ON
+        ${_wx_edge}
+        -DwxUSE_WEBVIEW_IE=OFF
         -DwxUSE_REGEX=builtin
         -DwxUSE_LIBXPM=builtin
         -DwxUSE_LIBSDL=OFF
         -DwxUSE_XTEST=OFF
-        -DwxUSE_STC=ON
+        -DwxUSE_STC=OFF
         -DwxUSE_AUI=ON
         -DwxUSE_LIBPNG=sys
         -DwxUSE_ZLIB=sys
@@ -55,7 +59,6 @@ prusaslicer_add_cmake_project(wxWidgets
         -DwxUSE_LIBTIFF=sys
         -DwxUSE_EXPAT=sys
 )
-
 
 if (MSVC)
     add_debug_dep(dep_wxWidgets)

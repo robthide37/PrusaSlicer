@@ -323,7 +323,7 @@ void MainFrame::update_icon() {
             m_tabpanel->SetPageImage(0, 0);
             m_tabpanel->SetPageImage(1, 1);
             m_tabpanel->SetPageImage(2, 2);
-            m_tabpanel->SetPageImage(3, 3);
+            m_tabpanel->SetPageImage(3, "tab_device.svg");
             m_tabpanel->SetPageImage(4, m_plater->printer_technology() == PrinterTechnology::ptSLA ? 6 : 4);
             m_tabpanel->SetPageImage(5, m_plater->printer_technology() == PrinterTechnology::ptSLA ? 7 : 5);
         }
@@ -746,14 +746,12 @@ void MainFrame::update_layout()
                     */
 
         wxPanel* first_panel = new wxPanel(m_tabpanel);
-        m_devicePanel        = new wxPanel(this);
-      
-      
+        
 
         m_tabpanel->InsertPage(0, first_panel, _L("3D view"));
         m_tabpanel->InsertPage(1, new wxPanel(m_tabpanel), _L("Sliced preview"));
         m_tabpanel->InsertPage(2, new wxPanel(m_tabpanel), _L("GCode preview"));
-        //m_tabpanel->InsertPage(3, m_webView, _L("Device"));
+        m_tabpanel->InsertPage(3, m_webView, _L("Device"));
 
 
         if (m_tabpanel->GetPageCount() == 7) {
@@ -763,12 +761,19 @@ void MainFrame::update_layout()
             m_tabpanel->GetPage(3)->SetSizer(new wxBoxSizer(wxVERTICAL));
             update_icon();
         }
+
         m_plater->Reparent(first_panel);
         first_panel->GetSizer()->Add(m_plater, 1, wxEXPAND);
         m_tabpanel->ChangeSelection(0);
         m_main_sizer->Add(m_tabpanel, 1, wxEXPAND);
+        m_main_sizer->Add(m_webView, 1, wxEXPAND);
+
         m_plater->Show();
         m_tabpanel->Show();
+        m_webView->Hide();
+        m_webView->Raise();
+        m_webView->Enable(); 
+
         if (need_freeze) this->Thaw();
 #endif
         if (need_freeze) this->Thaw();
@@ -1061,9 +1066,10 @@ void MainFrame::init_tabpanel()
     // icons for m_tabpanel tabs
     wxImageList* img_list = nullptr;
     if (icon_size >= 8) {
-        std::vector<std::string> icon_list =  { "editor_menu", "layers", "preview_menu", "cog", "spool_cog",  "printer_cog",  "resin_cog",    "sla_printer_cog" };
+        std::vector<std::string> icon_list =  { "editor_menu", "preview_menu", "tab_device", "cog", "spool_cog",  "printer_cog",  "resin_cog",    "sla_printer_cog" };
         if (icon_size < 16)
-            icon_list =                       { "editor_menu", "layers", "preview_menu", "cog", "spool",      "printer",      "resin",        "sla_printer" };
+            icon_list = {"editor_menu",  "preview_menu", "tab_device", "cog",
+                         "spool",       "printer", "resin",        "sla_printer"};
         for (std::string icon_name : icon_list) {
             const wxBitmap& bmp = create_scaled_bitmap(icon_name, this, icon_size);
             if (img_list == nullptr)
@@ -1207,11 +1213,12 @@ void MainFrame::init_tabpanel()
                 }
             } else if (m_tabpanel->GetSelection() == 3) {
                 this->m_plater->Hide();
-                
-                m_devicePanel->SetBackgroundColour(wxColour(255, 0, 0));
-                // m_tabpanel->SetBackgroundColour(wxColour(255, 0, 0)); 
-                //m_webView->Show();
-                m_devicePanel->Show();
+
+                m_webViewPanel->Show();
+                m_webViewPanel->Enable();
+
+                m_webView->Show();
+                m_webView->Enable();
             }
 
             m_tabpanel->GetCurrentPage()->GetSizer()->Add(m_plater, 1, wxEXPAND);
@@ -1233,9 +1240,12 @@ void MainFrame::init_tabpanel()
 
     wxGetApp().plater_ = m_plater;
 
-    m_webViewPanel     = new WebViewPanel(this, "https://192.168.187.50/");
-    m_webView          = m_webViewPanel->m_webView;
 
+    // https://192.168.187.50/
+    wxString url = "https://192.168.187.50/";
+    m_webViewPanel = new WebViewPanel(this, url);
+
+    m_webView = m_webViewPanel->m_webView;
 
     if (m_webView != nullptr) {
         m_webView->Hide();
