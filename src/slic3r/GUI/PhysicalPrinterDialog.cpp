@@ -427,6 +427,17 @@ void PhysicalPrinterDialog::build_printhost_settings(ConfigOptionsGroup* m_optgr
         m_optgroup->append_single_option_line(option);
     }
 
+    ConfigOptionDef def;
+    def.label                = L("Enable Device Tab");
+    def.type                 = coBool;
+    def.tooltip              = L("Use this option to enable device tab");
+    this->m_show_cert_fields = !m_config->opt_string("printhost_client_cert").empty();
+    def.set_default_value(new ConfigOptionBool{this->m_show_device_tab});
+    Option option2(def, "show_device_tab");
+    option2.opt.width = Field::def_width_wider();
+    m_optgroup->append_single_option_line(option2);
+
+
     option = m_optgroup->get_option("printhost_client_cert");
     option.opt.width = Field::def_width_wider();
     Line client_cert_line = m_optgroup->create_single_option_line(option);

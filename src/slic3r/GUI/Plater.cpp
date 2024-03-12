@@ -919,6 +919,12 @@ void Sidebar::update_all_preset_comboboxes()
 {
     PresetBundle &preset_bundle = *wxGetApp().preset_bundle;
     const auto print_tech = preset_bundle.printers.get_edited_preset().printer_technology();
+    
+
+    // Device Tab 
+    auto p_mainframe = wxGetApp().mainframe;
+    auto cfg         = preset_bundle.printers.get_edited_preset().config;
+
 
     // Update the print choosers to only contain the compatible presets, update the dirty flags.
     if (print_tech == ptFFF)
@@ -935,7 +941,23 @@ void Sidebar::update_all_preset_comboboxes()
         for (PlaterPresetComboBox* cb : p->combos_filament)
             cb->update();
     }
-}
+
+     DynamicPrintConfig *selected_printer_config = wxGetApp().preset_bundle->physical_printers.get_selected_printer_config();
+     if (selected_printer_config)
+         if (selected_printer_config->has("print_host")) {
+             const auto print_host_opt = selected_printer_config->opt_string("print_host");
+
+             std::cout << print_host_opt;
+             wxString url = print_host_opt;
+             
+             if (!url.empty()) {
+                 if (!url.Lower().starts_with("http"))
+                     url = wxString::Format("http://%s", url);
+
+                 p_mainframe->load_printer_url(url);
+             }
+         }
+    }
 
 void Sidebar::update_presets(Preset::Type preset_type)
 {
@@ -3281,6 +3303,26 @@ unsigned int Plater::priv::update_background_process(bool force_validation, bool
     // Apply new config to the possibly running background task.
     bool               was_running = background_process.running();
     Print::ApplyStatus invalidated = background_process.apply(q->model(), wxGetApp().preset_bundle->full_config(), wxGetApp().preset_bundle->physical_printers.get_selected_printer_config());
+
+
+    DynamicPrintConfig *selected_printer_config = wxGetApp().preset_bundle->physical_printers.get_selected_printer_config();
+    auto p_mainframe = wxGetApp().mainframe;
+
+    if (selected_printer_config)
+        if (selected_printer_config->has("print_host")) {
+            const auto print_host_opt = selected_printer_config->opt_string("print_host");
+
+            std::cout << print_host_opt;
+            wxString url = print_host_opt;
+
+            if (!url.empty()) {
+                if (!url.Lower().starts_with("http"))
+                    url = wxString::Format("http://%s", url);
+
+                p_mainframe->load_printer_url(url);
+            }
+        }
+
 
     // Just redraw the 3D canvas without reloading the scene to consume the update of the layer height profile.
     if (view3D->is_layers_editing_enabled())

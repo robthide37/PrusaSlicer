@@ -57,6 +57,9 @@
 namespace Slic3r {
 namespace GUI {
 
+
+wxDEFINE_EVENT(EVT_LOAD_PRINTER_URL, LoadPrinterViewEvent);
+
 constexpr int32_t MAINFRAME_MENU_ITEM_COUNT = 8;
 
 enum class ERescaleTarget
@@ -718,10 +721,7 @@ void MainFrame::update_layout()
 
         m_main_sizer->Add(m_tabpanel, 1, wxEXPAND | wxTOP, 1);
 
-        // Add the custom sizer to m_main_sizer
-        //m_webViewPanel->GetSizer()->Add(m_webView, 1, wxEXPAND);
         m_webView->Raise();
-
 
         update_icon();
         // show
@@ -738,15 +738,7 @@ void MainFrame::update_layout()
 
 #else
 
-        /*    MyWebViewWindow(wxWindow *      parent,
-                    wxWindowID      id   = wxID_ANY,
-                    const wxString &url  = wxEmptyString,
-                    const wxPoint & pos  = wxDefaultPosition,
-                    const wxSize &  size = wxDefaultSize)
-                    */
-
         wxPanel* first_panel = new wxPanel(m_tabpanel);
-        
 
         m_tabpanel->InsertPage(0, first_panel, _L("3D view"));
         m_tabpanel->InsertPage(1, new wxPanel(m_tabpanel), _L("Sliced preview"));
@@ -1151,8 +1143,12 @@ void MainFrame::init_tabpanel()
                     this->m_plater->refresh_print();
                 }
             } else if (bt_idx_sel == 3) {
-                m_webViewPanel->Show();
-                m_webViewPanel->Enable();
+
+                DynamicPrintConfig *selected_printer_config = wxGetApp().preset_bundle->physical_printers.get_selected_printer_config();
+                if (!selected_printer_config) {
+                    // No physical printer found
+                    wxMessageBox("No physical printer found.", "Warning", wxICON_WARNING | wxOK);
+                  }
 
                 m_webView->Show();
                 m_webView->Enable();
@@ -1240,10 +1236,13 @@ void MainFrame::init_tabpanel()
 
     wxGetApp().plater_ = m_plater;
 
+    m_webViewPanel = new WebViewPanel(this);
 
-    // https://192.168.187.50/
-    wxString url = "https://192.168.187.50/";
-    m_webViewPanel = new WebViewPanel(this, url);
+    Bind(EVT_LOAD_PRINTER_URL, [this](LoadPrinterViewEvent &evt) {
+        wxString url = evt.GetString();
+
+        m_webViewPanel->load_url(url);
+    });
 
     m_webView = m_webViewPanel->m_webView;
 
@@ -1269,6 +1268,32 @@ void MainFrame::init_tabpanel()
         }
     }
 }
+
+void MainFrame::load_printer_url(wxString url)
+{
+    BOOST_LOG_TRIVIAL(trace) << "load_printer_url:" << url;
+    auto evt = new LoadPrinterViewEvent(EVT_LOAD_PRINTER_URL, this->GetId());
+    evt->SetString(url);
+    wxQueueEvent(this, evt);
+}
+
+
+void MainFrame::load_printer_url()
+{
+    PresetBundle &preset_bundle = *wxGetApp().preset_bundle;
+
+    auto cfg = preset_bundle.printers.get_edited_preset().config;
+    
+    wxString url = cfg.opt_string("print_host");
+
+    if (url) {
+        url = wxString::Format("http://%s", url);
+        load_printer_url(url);
+    }
+ }
+
+
+
 
 #ifdef WIN32
 void MainFrame::register_win32_callbacks()

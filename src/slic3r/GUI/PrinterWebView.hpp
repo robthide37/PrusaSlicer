@@ -13,14 +13,14 @@ namespace Slic3r { namespace GUI {
 class WebViewPanel : public wxPanel
 {
 public:
-    WebViewPanel(wxWindow *parent, const wxString &initialUrl);
+    WebViewPanel(wxWindow *parent);
     ~WebViewPanel();
 
     wxWebView *m_webView;
+    void       load_url(wxString &url);
 
 private:
-    wxWebView *CreateWebView(wxWindow *parent, const wxString &initialUrl);
-    // TODO: Create Dynamical API Key function
+    wxWebView *CreateWebView(wxWindow *parent);
 
 };
 }

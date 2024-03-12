@@ -102,6 +102,7 @@ protected:
     void on_sys_color_changed() override {};
 
     bool m_show_cert_fields = false;
+    bool m_show_device_tab = true;
     bool had_all_mk3;
 };
 

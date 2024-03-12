@@ -224,6 +224,10 @@ public:
     // Propagate changed configuration from the Tab to the Plater and save changes to the AppConfig
     void        on_config_changed(DynamicPrintConfig* cfg) const ;
 
+
+    void load_printer_url();
+    void load_printer_url(wxString url);
+
     bool can_save() const;
     bool can_save_as() const;
     void save_project();

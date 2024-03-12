@@ -20,11 +20,11 @@
 namespace Slic3r {
 namespace GUI {
 
-WebViewPanel::WebViewPanel(wxWindow *parent, const wxString &initialUrl) : wxPanel(parent, wxID_ANY)
+WebViewPanel::WebViewPanel(wxWindow *parent) : wxPanel(parent, wxID_ANY)
 {
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 
-    m_webView = CreateWebView(parent, initialUrl);
+    m_webView = CreateWebView(parent);
     sizer->Add(m_webView, 1, wxEXPAND);
 }
 
@@ -33,16 +33,24 @@ WebViewPanel::~WebViewPanel()
 
 }
 
-wxWebView* WebViewPanel::CreateWebView(wxWindow* parent, const wxString& initialUrl) {
+wxWebView* WebViewPanel::CreateWebView(wxWindow* parent) {
 
-    //wxWebViewIE::MSWSetEmulationLevel(wxWEBVIEWIE_EMU_IE11);
-    wxWebView *webview = WebView::CreateWebView(parent, initialUrl);
+    wxWebView *webview = WebView::CreateWebView(parent, "");
 
-    webview->LoadURL(initialUrl);
     webview->EnableContextMenu(true);
     webview->EnableAccessToDevTools(true);
 
     return webview;
+}
+
+void WebViewPanel::load_url(wxString &url)
+{
+    //    this->Show();
+    //    this->Raise();
+    if (m_webView == nullptr)
+        return;
+
+    m_webView->LoadURL(url);
 }
 
 

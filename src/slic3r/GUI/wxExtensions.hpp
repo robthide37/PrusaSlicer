@@ -24,7 +24,6 @@ inline void         msw_rescale_menu(wxMenu* /* menu */) {}
 
 #define _USE_CUSTOM_NOTEBOOK 1
 
-
 #ifdef _MSW_DARK_MODE
 #endif
 
