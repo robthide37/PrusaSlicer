@@ -675,12 +675,10 @@ void MainFrame::update_layout()
         m_plater->Layout();
         if (!wxGetApp().tabs_as_menu()) {
             Notebook* notebook = static_cast<Notebook*>(m_tabpanel);
-            notebook->InsertBtPage(0, m_plater, _L("3D view"), std::string("editor_menu"), icon_size, true);
+            notebook->InsertBtPage(0, m_plater, _L("3D view"), std::string("tab_editor_menu"), icon_size, true);
             notebook->InsertFakeBtPage(1, 0, _L("Slice Preview"), std::string("layers"), icon_size, false);
-            notebook->InsertFakeBtPage(2, 0, _L("Gcode preview"), std::string("preview_menu"), icon_size, false);
-            notebook->InsertBtPage(3, m_webView, _L("Device"), std::string("preview_menu"), icon_size, false);
-
-
+            notebook->InsertFakeBtPage(2, 0, _L("Gcode preview"), std::string("tab_preview_menu"), icon_size, false);
+            notebook->InsertBtPage(3, m_webView, _L("Device"), std::string("tab_device_active"), icon_size, false);
 
             notebook->GetBtnsListCtrl()->InsertSpacer(4, 40);
             notebook->GetBtnsListCtrl()->GetPageButton(0)->Bind(wxCUSTOMEVT_NOTEBOOK_BT_PRESSED, [this](wxCommandEvent& event) {
@@ -1058,9 +1056,9 @@ void MainFrame::init_tabpanel()
     // icons for m_tabpanel tabs
     wxImageList* img_list = nullptr;
     if (icon_size >= 8) {
-        std::vector<std::string> icon_list =  { "editor_menu", "preview_menu", "tab_device", "cog", "spool_cog",  "printer_cog",  "resin_cog",    "sla_printer_cog" };
+        std::vector<std::string> icon_list =  { "tab_editor_menu", "tab_preview_menu", "tab_device", "cog", "spool_cog",  "printer_cog",  "resin_cog",    "sla_printer_cog" };
         if (icon_size < 16)
-            icon_list = {"editor_menu",  "preview_menu", "tab_device", "cog",
+            icon_list = {"tab_editor_menu",  "tab_preview_menu", "tab_device", "cog",
                          "spool",       "printer", "resin",        "sla_printer"};
         for (std::string icon_name : icon_list) {
             const wxBitmap& bmp = create_scaled_bitmap(icon_name, this, icon_size);
@@ -1965,13 +1963,13 @@ void MainFrame::init_menubar_as_editor()
     {
         if (m_plater) {
             append_menu_item(windowMenu, wxID_HIGHEST + 1, _L("3D &Platter Tab") + "\tCtrl+1", _L("Show the editor of the input models"),
-                [this](wxCommandEvent&) { select_tab(TabPosition::tpPlater); }, "editor_menu", nullptr,
+                [this](wxCommandEvent&) { select_tab(TabPosition::tpPlater); }, "tab_editor_menu", nullptr,
                 []() {return true; }, this);
             m_layerpreview_menu_item = append_menu_item(windowMenu, wxID_HIGHEST + 2, _L("Layer previe&w Tab") + "\tCtrl+2", _L("Show the layers from the slicing process"),
                 [this](wxCommandEvent&) { select_tab(TabPosition::tpPlaterPreview); }, "layers", nullptr,
                 []() {return true; }, this);
             append_menu_item(windowMenu, wxID_HIGHEST + 3, _L("GCode Pre&view Tab") + "\tCtrl+3", _L("Show the preview of the gcode output"),
-                [this](wxCommandEvent&) { select_tab(TabPosition::tpPlaterGCode); }, "preview_menu", nullptr,
+                [this](wxCommandEvent&) { select_tab(TabPosition::tpPlaterGCode); }, "tab_preview_menu", nullptr,
                 []() {return true; }, this);
             windowMenu->AppendSeparator();
         }
