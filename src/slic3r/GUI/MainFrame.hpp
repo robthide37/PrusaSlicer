@@ -10,7 +10,6 @@
 #include <WebView2.h>
 #include <wx/wx.h>
 #include "PrinterWebView.hpp"
-#include <wil/com.h>
 
 #ifdef __APPLE__
 #include <wx/taskbar.h>
@@ -27,7 +26,6 @@ class wxBookCtrlBase;
 class wxProgressDialog;
 class MyPanel;
 
-using namespace Microsoft::WRL;
 
 namespace Slic3r {
 

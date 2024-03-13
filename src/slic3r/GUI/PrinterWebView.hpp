@@ -3,7 +3,6 @@
 
 #include <wx/wx.h>
 #include <WebView2.h>
-#include <wil/com.h>
 #include <wx/webview.h>
 #include <wx/msw/webview_edge.h>
 #include <wx/msw/webview_ie.h>
