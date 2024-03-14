@@ -12,6 +12,12 @@ include(PrecompiledHeader)
 set(SLIC3R_GUI_SOURCES
     pchheader.cpp
     pchheader.hpp
+    GUI/PrinterWebView.cpp   
+     GUI/PrinterWebView.hpp
+    GUI/CR3DWebView.cpp
+    GUI/CR3DWebView.hpp
+
+
     GUI/AboutDialog.cpp
     GUI/AboutDialog.hpp
     GUI/SysInfoDialog.cpp
@@ -34,12 +40,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/CalibrationFlowDialog.hpp
     GUI/CalibrationCr3dDialog.cpp
     GUI/CalibrationCr3dDialog.hpp
-
-    GUI/PrinterWebView.hpp
-    GUI/PrinterWebView.cpp
-    GUI/WebView.cpp
-    GUI/WebView.hpp
-
     GUI/Widgets/AxisCtrlButton.cpp
     GUI/Widgets/AxisCtrlButton.hpp
     GUI/Widgets/Button.cpp
@@ -96,8 +96,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/Widgets/StepCtrl.hpp
     GUI/Widgets/ProgressBar.cpp
     GUI/Widgets/ProgressBar.hpp
-    GUI/Widgets/WebView.cpp
-    GUI/Widgets/WebView.hpp
     GUI/Widgets/ErrorMsgStaticText.cpp
     GUI/Widgets/ErrorMsgStaticText.hpp
     GUI/CalibrationOverBridgeDialog.cpp
@@ -264,10 +262,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/FirmwareDialog.hpp
     GUI/PrintHostDialogs.cpp
     GUI/PrintHostDialogs.hpp
-
-    #GUI/Widgets/WebView.cpp
-    #GUI/Widgets/WebView.hpp
-
     GUI/Jobs/Job.hpp
     GUI/Jobs/Job.cpp
     GUI/Jobs/Worker.hpp
@@ -285,8 +279,6 @@ set(SLIC3R_GUI_SOURCES
     GUI/Jobs/ProgressIndicator.hpp
     GUI/Jobs/NotificationProgressIndicator.hpp
     GUI/Jobs/NotificationProgressIndicator.cpp
-    # GUI/ProgressStatusBar.hpp
-    # GUI/ProgressStatusBar.cpp
     GUI/Mouse3DController.cpp
     GUI/Mouse3DController.hpp
     GUI/DoubleSlider.cpp
@@ -297,8 +289,7 @@ set(SLIC3R_GUI_SOURCES
     GUI/ObjectDataViewModel.cpp
     GUI/ObjectDataViewModel.hpp
     GUI/Widgets/PopupWindow.cpp
-        GUI/Widgets/PopupWindow.hpp
-
+    GUI/Widgets/PopupWindow.hpp
     GUI/InstanceCheck.cpp
     GUI/InstanceCheck.hpp
     GUI/Search.cpp

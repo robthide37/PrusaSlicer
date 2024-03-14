@@ -919,6 +919,12 @@ void Sidebar::update_all_preset_comboboxes()
 {
     PresetBundle &preset_bundle = *wxGetApp().preset_bundle;
     const auto print_tech = preset_bundle.printers.get_edited_preset().printer_technology();
+    
+
+    // Device Tab 
+    auto p_mainframe = wxGetApp().mainframe;
+    auto cfg         = preset_bundle.printers.get_edited_preset().config;
+
 
     // Update the print choosers to only contain the compatible presets, update the dirty flags.
     if (print_tech == ptFFF)
@@ -935,7 +941,23 @@ void Sidebar::update_all_preset_comboboxes()
         for (PlaterPresetComboBox* cb : p->combos_filament)
             cb->update();
     }
-}
+
+     DynamicPrintConfig *selected_printer_config = wxGetApp().preset_bundle->physical_printers.get_selected_printer_config();
+     if (selected_printer_config)
+         if (selected_printer_config->has("print_host")) {
+             const auto print_host_opt = selected_printer_config->opt_string("print_host");
+
+             std::cout << print_host_opt;
+             wxString url = print_host_opt;
+             
+             if (!url.empty()) {
+                 if (!url.Lower().starts_with("http"))
+                     url = wxString::Format("http://%s", url);
+
+                 p_mainframe->load_printer_url(url);
+             }
+         }
+    }
 
 void Sidebar::update_presets(Preset::Type preset_type)
 {
@@ -1138,7 +1160,7 @@ void Sidebar::jump_to_option(size_t selected)
     wxGetApp().get_tab(opt.type)->activate_option(opt.opt_key_with_idx(), boost::nowide::narrow(opt.category));
 
     // Switch to the Settings NotePad
-//    wxGetApp().mainframe->select_tab(MainFrame::ETabType::LastSettings);
+//    wxGetApp().mainframe->select_tab(MainFrame::ETabType::tpLastSettings);
 }
 
 ObjectManipulation* Sidebar::obj_manipul()
@@ -3282,6 +3304,26 @@ unsigned int Plater::priv::update_background_process(bool force_validation, bool
     bool               was_running = background_process.running();
     Print::ApplyStatus invalidated = background_process.apply(q->model(), wxGetApp().preset_bundle->full_config(), wxGetApp().preset_bundle->physical_printers.get_selected_printer_config());
 
+
+    DynamicPrintConfig *selected_printer_config = wxGetApp().preset_bundle->physical_printers.get_selected_printer_config();
+    auto p_mainframe = wxGetApp().mainframe;
+
+    if (selected_printer_config)
+        if (selected_printer_config->has("print_host")) {
+            const auto print_host_opt = selected_printer_config->opt_string("print_host");
+
+            std::cout << print_host_opt;
+            wxString url = print_host_opt;
+
+            if (!url.empty()) {
+                if (!url.Lower().starts_with("http"))
+                    url = wxString::Format("http://%s", url);
+
+                p_mainframe->load_printer_url(url);
+            }
+        }
+
+
     // Just redraw the 3D canvas without reloading the scene to consume the update of the layer height profile.
     if (view3D->is_layers_editing_enabled())
         view3D->get_wxglcanvas()->Refresh();
@@ -3413,18 +3455,18 @@ unsigned int Plater::priv::update_background_process(bool force_validation, bool
         // auto_switch_preview == 3 means "force tab change only if for gcode"
         if (wxGetApp().app_config->get("auto_switch_preview") == "3") {
             if (this->preview->can_display_gcode())
-                main_frame->select_tab(MainFrame::ETabType::PlaterGcode, true);
+                main_frame->select_tab(MainFrame::TabPosition::tpPlaterGCode, true);
             // auto_switch_preview == 1 means "force tab change"
         } else if (wxGetApp().app_config->get("auto_switch_preview") == "1") {
-            main_frame->select_tab(MainFrame::ETabType::Plater3D, true);
+            main_frame->select_tab(MainFrame::TabPosition::tpPlater, true);
             // auto_switch_preview == 2 means "force tab change only if already on a platter one"
-        } else if (wxGetApp().app_config->get("auto_switch_preview") == "2" || main_frame->selected_tab() < MainFrame::ETabType::LastPlater) {
+        } else if (wxGetApp().app_config->get("auto_switch_preview") == "2" || main_frame->selected_tab() < MainFrame::TabPosition::tpLastPlater) {
             if (this->preview->can_display_gcode())
-                main_frame->select_tab(MainFrame::ETabType::PlaterGcode, true);
+                main_frame->select_tab(MainFrame::TabPosition::tpPlaterGCode, true);
             else if (this->preview->can_display_volume() && background_process.running()) // don't switch to plater3D if you modify a gcode settign and you don't have background processing
-                main_frame->select_tab(MainFrame::ETabType::PlaterPreview, true);
+                main_frame->select_tab(MainFrame::TabPosition::tpPlaterPreview, true);
             else
-                main_frame->select_tab(MainFrame::ETabType::Plater3D, true);
+                main_frame->select_tab(MainFrame::TabPosition::tpPlater, true);
         }
     }
     return return_state;
@@ -4160,9 +4202,9 @@ void Plater::priv::on_slicing_update(SlicingStatusEvent &evt)
 
 void Plater::priv::on_slicing_completed(wxCommandEvent & evt)
 {
-    if( ( wxGetApp().app_config->get("auto_switch_preview") == "1" || (wxGetApp().app_config->get("auto_switch_preview") == "2" && main_frame->selected_tab() < MainFrame::ETabType::LastPlater) )
+    if( ( wxGetApp().app_config->get("auto_switch_preview") == "1" || (wxGetApp().app_config->get("auto_switch_preview") == "2" && main_frame->selected_tab() < MainFrame::TabPosition::tpLastPlater) )
         && !this->preview->can_display_gcode())
-        main_frame->select_tab(MainFrame::ETabType::PlaterPreview);
+        main_frame->select_tab(MainFrame::TabPosition::tpPlaterPreview);
 
     if (view3D->is_dragging()) // updating scene now would interfere with the gizmo dragging
         delayed_scene_refresh = true;
@@ -4257,9 +4299,9 @@ void Plater::priv::on_process_completed(SlicingProcessCompletedEvent &evt)
     // auto_switch_preview == 2 means "force tab change only if already on a plater one"
     // auto_switch_preview == 3 means "force tab change only if for gcode"
     if (wxGetApp().app_config->get("auto_switch_preview") == "1" 
-        || (wxGetApp().app_config->get("auto_switch_preview") == "2" && main_frame->selected_tab() < MainFrame::ETabType::LastPlater) 
+        || (wxGetApp().app_config->get("auto_switch_preview") == "2" && main_frame->selected_tab() < MainFrame::TabPosition::tpLastPlater) 
         || wxGetApp().app_config->get("auto_switch_preview") == "3")
-        main_frame->select_tab(MainFrame::ETabType::PlaterGcode);
+        main_frame->select_tab(MainFrame::TabPosition::tpPlaterGCode);
 
     // Reset the "export G-code path" name, so that the automatic background processing will be enabled again.
     this->background_process.reset_export();

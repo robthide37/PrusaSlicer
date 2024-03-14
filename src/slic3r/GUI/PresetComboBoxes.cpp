@@ -653,13 +653,13 @@ void PlaterPresetComboBox::switch_to_tab()
         wxGetApp().tab_panel()->SetSelection(page_id);
         // Switch to Settings NotePad
         if (m_type == Preset::Type::TYPE_FFF_PRINT || m_type == Preset::Type::TYPE_SLA_PRINT)
-            wxGetApp().mainframe->select_tab(MainFrame::ETabType::PrintSettings);
+            wxGetApp().mainframe->select_tab(MainFrame::TabPosition::tpPrintSettings);
         else if (m_type == Preset::Type::TYPE_FFF_FILAMENT || m_type == Preset::Type::TYPE_SLA_MATERIAL)
-            wxGetApp().mainframe->select_tab(MainFrame::ETabType::FilamentSettings);
+            wxGetApp().mainframe->select_tab(MainFrame::TabPosition::tpFilamentSettings);
         else if (m_type == Preset::Type::TYPE_PRINTER)
-            wxGetApp().mainframe->select_tab(MainFrame::ETabType::PrinterSettings);
+            wxGetApp().mainframe->select_tab(MainFrame::TabPosition::tpPrinterSettings);
         else
-            wxGetApp().mainframe->select_tab(MainFrame::ETabType::LastSettings);
+            wxGetApp().mainframe->select_tab(MainFrame::TabPosition::tpLastSettings);
 
         //In a case of a multi-material printing, for editing another Filament Preset
         //it's needed to select this preset for the "Filament settings" Tab

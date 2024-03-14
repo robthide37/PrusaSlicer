@@ -7,6 +7,10 @@
 #include <wx/settings.h>
 #include <wx/string.h>
 #include <wx/filehistory.h>
+#include <WebView2.h>
+#include <wx/wx.h>
+#include "PrinterWebView.hpp"
+
 #ifdef __APPLE__
 #include <wx/taskbar.h>
 #endif // __APPLE__
@@ -20,6 +24,8 @@
 
 class wxBookCtrlBase;
 class wxProgressDialog;
+class MyPanel;
+
 
 namespace Slic3r {
 
@@ -75,6 +81,7 @@ class MainFrame : public DPIFrame
     wxString    m_qs_last_output_file = wxEmptyString;
     wxString    m_last_config = wxEmptyString;
     wxMenuBar*  m_menubar{ nullptr };
+    size_t      m_last_selected_tab;
 
 #if 0
     wxMenuItem* m_menu_item_repeat { nullptr }; // doesn't used now
@@ -136,16 +143,17 @@ public:
         GCodeViewer
     };
 
-    enum class ETabType : uint8_t
-    {
-        Plater3D,
-        PlaterPreview,
-        PlaterGcode,
-        LastPlater,
-        PrintSettings,
-        FilamentSettings,
-        PrinterSettings,
-        LastSettings,
+
+    enum class TabPosition : uint8_t {
+        tpPlater,
+        tpPlaterPreview,
+        tpPlaterGCode,
+        tpLastPlater,
+        tpDevice,
+        tpPrintSettings,
+        tpFilamentSettings,
+        tpPrinterSettings,
+        tpLastSettings,
         Any
     };
 
@@ -207,12 +215,16 @@ public:
     // When tab == -1, will be selected last selected tab
     // 0 = a plater tab, 1 = print setting, 2 = filament settign, 3 = printer setting
     void        select_tab(Tab* tab);
-    void        select_tab(ETabType tab = ETabType::Any, bool keep_tab_type = false);
-    ETabType    selected_tab() const; 
-    ETabType    next_preview_tab();
+    void        select_tab(TabPosition tab = TabPosition::Any, bool keep_tab_type = false);
+    TabPosition    selected_tab() const; 
+    TabPosition    next_preview_tab();
     void        select_view(const std::string& direction);
     // Propagate changed configuration from the Tab to the Plater and save changes to the AppConfig
     void        on_config_changed(DynamicPrintConfig* cfg) const ;
+
+
+    void load_printer_url();
+    void load_printer_url(wxString url);
 
     bool can_save() const;
     bool can_save_as() const;
@@ -226,6 +238,12 @@ public:
 
     Plater*               m_plater { nullptr };
     wxBookCtrlBase*       m_tabpanel { nullptr };
+    wxPanel*              m_devicePanel {nullptr};
+    
+    WebViewPanel*         m_webViewPanel{nullptr};
+    wxWebView*            m_webView{nullptr};
+
+
     bool                  m_tabpanel_stop_event = false;
     SettingsDialog        m_settings_dialog;
     DiffPresetDialog      diff_dialog;

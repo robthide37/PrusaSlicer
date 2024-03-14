@@ -22,8 +22,9 @@ void                msw_rescale_menu(wxMenu* menu);
 inline void         msw_rescale_menu(wxMenu* /* menu */) {}
 #endif /* __WXMSW__ */
 
+#define _USE_CUSTOM_NOTEBOOK 1
+
 #ifdef _MSW_DARK_MODE
-#define _USE_CUSTOM_NOTEBOOK      1
 #endif
 
 wxMenuItem* append_menu_item(wxMenu* menu, int id, const wxString& string, const wxString& description,
