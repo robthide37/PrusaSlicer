@@ -427,6 +427,8 @@ void PhysicalPrinterDialog::build_printhost_settings(ConfigOptionsGroup* m_optgr
         m_optgroup->append_single_option_line(option);
     }
 
+    /*TODO: Add show_device_tab key to config
+
     ConfigOptionDef def;
     def.label                = L("Enable Device Tab");
     def.type                 = coBool;
@@ -436,7 +438,7 @@ void PhysicalPrinterDialog::build_printhost_settings(ConfigOptionsGroup* m_optgr
     Option option2(def, "show_device_tab");
     option2.opt.width = Field::def_width_wider();
     m_optgroup->append_single_option_line(option2);
-
+    */
 
     option = m_optgroup->get_option("printhost_client_cert");
     option.opt.width = Field::def_width_wider();
