@@ -178,6 +178,41 @@ double round(float f) {
     return dbl_val;
 }
 
+
+int as_get_int_idx(std::string &key) { 
+
+    const ConfigOption* opt = get_coll(key).second;
+    
+    if (key == "extruders_count") 
+        return 11;
+    
+    return 10;
+}
+
+void as_set_int_idx(std::string &key, int val) {
+    // extruders_count returnen
+    if (!current_script->can_set())
+        return;
+    std::pair<const PresetCollection *, const ConfigOption *> result = get_coll(key);
+    if (result.second == nullptr)
+        throw NoDefinitionException("error, can't find int option " + key);
+    DynamicPrintConfig &conf = current_script->to_update()[result.first->type()];
+    if (result.second->type() == ConfigOptionType::coInt) {
+        conf.set_key_value(key, new ConfigOptionInt(val));
+    } else if (result.second->type() == ConfigOptionType::coInts) {
+        ConfigOptionInts *new_val = static_cast<ConfigOptionInts *>(result.second->clone());
+        new_val->set_at(val, 0);
+        conf.set_key_value(key, new_val);
+    } else if (result.second->type() == ConfigOptionType::coEnum) {
+      
+        ConfigOption *copy = result.second->clone();
+        copy->setInt(val);
+        conf.set_key_value(key, copy);
+    }
+}
+
+
+
 void as_set_float(std::string& key, float f_val)
 {
     if (!current_script->can_set()) return;
@@ -681,6 +716,14 @@ void ScriptContainer::init(const std::string& tab_key, Tab* tab)
             m_script_engine.get()->RegisterGlobalFunction("bool get_bool(string &in)",                          AngelScript::asFUNCTION(as_get_bool),   AngelScript::asCALL_CDECL);
             m_script_engine.get()->RegisterGlobalFunction("void set_bool(string &in, bool new_val)",            AngelScript::asFUNCTION(as_set_bool),   AngelScript::asCALL_CDECL);
             m_script_engine.get()->RegisterGlobalFunction("int get_int(string &in)",                            AngelScript::asFUNCTION(as_get_int),    AngelScript::asCALL_CDECL);
+
+            //int get_int_idx(std::string &key, int new_val) 
+            m_script_engine.get()->RegisterGlobalFunction("int get_int_idx(string &in)",
+                                                          AngelScript::asFUNCTION(as_get_int_idx),
+                                                          AngelScript::asCALL_CDECL);           
+                                                          
+            m_script_engine.get()->RegisterGlobalFunction("void set_int_idx(string &in, int new_val)", AngelScript::asFUNCTION(as_set_int_idx), AngelScript::asCALL_CDECL);
+
             m_script_engine.get()->RegisterGlobalFunction("void set_int(string &in, int new_val)",              AngelScript::asFUNCTION(as_set_int),    AngelScript::asCALL_CDECL);
             m_script_engine.get()->RegisterGlobalFunction("float get_float(string &in)",                        AngelScript::asFUNCTION(as_get_float),  AngelScript::asCALL_CDECL);
             m_script_engine.get()->RegisterGlobalFunction("void set_float(string &in, float new_val)",          AngelScript::asFUNCTION(as_set_float),  AngelScript::asCALL_CDECL);
