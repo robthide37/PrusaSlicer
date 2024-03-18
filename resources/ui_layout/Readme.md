@@ -72,8 +72,10 @@ each parameter is separated by ':'
 	* `height$INT`: change the height of the field. Don't works with every type of setting (mostly multilne text). Set to -1 to 'disable'.
 	* `precision$INT`: number of digit after the dot displayed.
 	* `url$STR`: the url to call when clicking on it.
+
 	* `id $INT`: for setting only a single value of a setting array.
 	* `idx`: for setting only a single value of a setting array, with the index of the page (for extruder ui page)
+	
 	* `script`: to tell that this setting doesn't exist and is defined in a script (see script section). You have to also define the type. They comes in two flavor: single value and array (Single values have to be used, but for filament and extruder tabs that require arrays):
 		* `bool`: Single vlaue. Tell the sotfware it's a checkbox (boolean return value)
 		* `int`: Single vlaue. Tell the sotfware it's a int entry field (int return value)

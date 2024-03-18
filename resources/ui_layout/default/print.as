@@ -22,6 +22,43 @@ void s_overhangs_set(bool set)
 	}
 }
 
+int s_nozzle_diameter_fff_get() { 
+	return get_int_idx("extruders_count"); 
+}
+
+// quick settings extruders_count
+
+void s_nozzle_diameter_fff_set(int new_val)
+{
+	int diameter = get_int("extruders_count");
+	set_int("extruders_count", 10);
+}
+
+
+// quick settings orientation
+int s_orientation_fff_get(string &out get_val)
+{
+    float orientation = get_float("init_z_rotate");
+    if (orientation == 0) {
+        return 0; // normal
+    }
+    if (orientation == 45) {
+        return 1; // 45°
+    }
+    return 3; // custom
+}
+void s_orientation_fff_set(string &in new_val, int idx)
+{
+	if(idx == 0) { // normal
+		set_float("init_z_rotate", 0);
+	} else if(idx == 1) { // 45°
+		set_float("init_z_rotate", 45);
+	} else if(idx == 2) { // reset
+		back_initial_value("init_z_rotate");
+	}
+}
+
+
 // "not thick bridge" like in prusaslicer
 
 float compute_overlap()
@@ -285,7 +322,6 @@ void s_fullfill_set(bool set)
 {
 	set_bool("enforce_full_fill_volume", set);
 }
-
 
 int s_perimeter_get()
 {

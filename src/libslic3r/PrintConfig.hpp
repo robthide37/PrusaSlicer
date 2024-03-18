@@ -816,7 +816,7 @@ PRINT_CONFIG_CLASS_DEFINE(
     ((ConfigOptionFloatOrPercent,       external_perimeter_extrusion_spacing))
     ((ConfigOptionFloatOrPercent,       external_perimeter_extrusion_change_odd_layers))
     ((ConfigOptionPercent,              external_perimeter_overlap))
-    ((ConfigOptionFloatOrPercent,       external_perimeter_speed))
+    ((ConfigOptionFloatOrPercent,       external_perimeter_speed)) 
     ((ConfigOptionBool,                 external_perimeters_first))
     ((ConfigOptionBool,                 external_perimeters_hole))
     ((ConfigOptionBool,                 external_perimeters_nothole))
