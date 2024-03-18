@@ -68,7 +68,7 @@ enum class ERescaleTarget
     SettingsDialog
 };
 
-#ifdef __APPLE__
+#if __APPLE__
 class PrusaSlicerTaskBarIcon : public wxTaskBarIcon
 {
 public:
@@ -76,7 +76,7 @@ public:
     wxMenu *CreatePopupMenu() override {
         wxMenu *menu = new wxMenu;
         if(wxGetApp().app_config->get("single_instance") == "0") {
-            // Only allow opening a new Slic3r instance on OSX if "single_instance" is disabled, 
+            // Only allow opening a new Slic3r instance on OSX if "single_instance" is disabled,
             // as starting new instances would interfere with the locking mechanism of "single_instance" support.
             append_menu_item(menu, wxID_ANY, _L("Open new instance"), wxString::Format(_L("Open a new %s instance"), SLIC3R_APP_NAME),
             [](wxCommandEvent&) { start_new_slicer(); }, "", nullptr);
@@ -136,13 +136,13 @@ DPIFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_S
     // Fonts were created by the DPIFrame constructor for the monitor, on which the window opened.
     wxGetApp().update_fonts(this);
 /*
-#ifndef __WXOSX__ // Don't call SetFont under OSX to avoid name cutting in ObjectList 
+#ifndef __WXOSX__ // Don't call SetFont under OSX to avoid name cutting in ObjectList
     this->SetFont(this->normal_font());
 #endif
     // Font is already set in DPIFrame constructor
 */
 
-#ifdef __APPLE__
+#if __APPLE__
     // Initialize the docker task bar icon.
     switch (wxGetApp().get_app_mode()) {
     default:
@@ -160,7 +160,7 @@ DPIFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_S
     // Load the icon either from the exe, or from the ico file.
     SetIcon(main_frame_icon(wxGetApp().get_app_mode()));
 
-	// initialize status bar
+    // initialize status bar
 //    m_statusbar = std::make_shared<ProgressStatusBar>(this);
 //    m_statusbar->set_font(GUI::wxGetApp().normal_font());
 //    if (wxGetApp().is_editor())
@@ -207,7 +207,7 @@ DPIFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_S
     Fit();
 
     const wxSize min_size = wxGetApp().get_min_size(); //wxSize(76*wxGetApp().em_unit(), 49*wxGetApp().em_unit());
-#ifdef __APPLE__
+#if __APPLE__
     // Using SetMinSize() on Mac messes up the window position in some cases
     // cf. https://groups.google.com/forum/#!topic/wx-users/yUKPBBfXWO0
     SetSize(min_size/*wxSize(760, 490)*/);
@@ -295,7 +295,7 @@ DPIFrame(NULL, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_S
 
 void MainFrame::update_icon() {
 
-#ifndef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     // icons for ESettingsLayout::Hidden
     wxImageList* img_list = nullptr;
     int icon_size = 0;
@@ -349,12 +349,12 @@ void MainFrame::update_icon() {
 #endif
 }
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
 static wxString pref() { return " [ "; }
 static wxString suff() { return " ] "; }
 static void append_tab_menu_items_to_menubar(wxMenuBar* bar, PrinterTechnology pt, MainFrame::ESettingsLayout layout)
 {
-    // Add separator 
+    // Add separator
     bar->Append(new wxMenu(), "          ");
     bar->EnableTop(MAINFRAME_MENU_ITEM_COUNT, false);
 
@@ -365,13 +365,13 @@ static void append_tab_menu_items_to_menubar(wxMenuBar* bar, PrinterTechnology p
         bar->Append(new wxMenu(),  _L("Gcode preview"));
         bar->Append(new wxMenu(),  _L("Device"));
         has_marker = true;
-        // Add separator 
+        // Add separator
         bar->Append(new wxMenu(), "          ");
         bar->EnableTop(MAINFRAME_MENU_ITEM_COUNT + 4, false);
     } else if (layout == MainFrame::ESettingsLayout::Old) {
         bar->Append(new wxMenu(), pref() + _L("Platter") + suff());
         has_marker = true;
-        // Add separator 
+        // Add separator
         bar->Append(new wxMenu(), "          ");
         bar->EnableTop(MAINFRAME_MENU_ITEM_COUNT + 2, false);
     }
@@ -453,7 +453,7 @@ static void add_tabs_as_menu(wxMenuBar* bar, MainFrame* main_frame, wxWindow* ba
         if (!menu || menu->GetMenuItemCount() > 0) {
             // If we are here it means that we open regular menu and not a tab used as a menu
             event.Skip(); // event.Skip() is verry important to next processing of the wxEVT_UPDATE_UI by this menu items.
-                          // If wxEVT_MENU_OPEN will not be pocessed in next event queue then MenuItems of this menu will never caught wxEVT_UPDATE_UI 
+                          // If wxEVT_MENU_OPEN will not be pocessed in next event queue then MenuItems of this menu will never caught wxEVT_UPDATE_UI
                           // and, as a result, "check/radio value" will not be updated
             return;
         }
@@ -531,7 +531,7 @@ void MainFrame::update_layout()
             m_plater_page = nullptr;
         }
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         if (!wxGetApp().tabs_as_menu()) {
             Notebook* notebook = static_cast<Notebook*>(m_tabpanel);
             if (m_layout == ESettingsLayout::Tabs) {
@@ -619,7 +619,7 @@ void MainFrame::update_layout()
     m_last_selected_plater_tab = 999;
 
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     int icon_size = 0;
     try {
         icon_size = atoi(wxGetApp().app_config->get("tab_icon_size").c_str());
@@ -637,14 +637,14 @@ void MainFrame::update_layout()
     {
         //layout
         m_plater->Reparent(m_tabpanel);
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         m_plater->Layout();
         if (!wxGetApp().tabs_as_menu())
-            dynamic_cast<Notebook*>(m_tabpanel)->InsertBtPage(0, m_plater, _L("Platter"), std::string("plater"), icon_size, true);
+            dynamic_cast<Notebook*>(m_tabpanel)->InsertBtPage(0, m_plater, _L("Plater"), std::string("plater"), icon_size, true);
         else
 #endif
-        m_tabpanel->InsertPage(0, m_plater, _L("Platter"));
-#ifdef _USE_CUSTOM_NOTEBOOK
+        m_tabpanel->InsertPage(0, m_plater, _L("Plater"));
+#if _USE_CUSTOM_NOTEBOOK
         if (!wxGetApp().tabs_as_menu())
             dynamic_cast<Notebook*>(m_tabpanel)->GetBtnsListCtrl()->InsertSpacer(1, 40);
 #endif
@@ -657,7 +657,7 @@ void MainFrame::update_layout()
         if (old_layout == ESettingsLayout::Dlg)
             if (int sel = m_tabpanel->GetSelection(); sel != wxNOT_FOUND)
                 m_tabpanel->SetSelection(sel+1);// call SetSelection to correct layout after switching from Dlg to Old mode
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         if (wxGetApp().tabs_as_menu())
             show_tabs_menu(true);
 #endif
@@ -670,7 +670,7 @@ void MainFrame::update_layout()
         bool need_freeze = !this->IsFrozen();
         if(need_freeze) this->Freeze();
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         m_plater->Reparent(m_tabpanel);
         m_plater->Layout();
         if (!wxGetApp().tabs_as_menu()) {
@@ -712,9 +712,9 @@ void MainFrame::update_layout()
             notebook->GetBtnsListCtrl()->GetPageButton(3)->Bind(wxCUSTOMEVT_NOTEBOOK_BT_PRESSED, [this](wxCommandEvent &event) {
                      this->m_plater->Hide();
                      m_webView->Show();
-                     m_webView->Enable(); 
+                     m_webView->Enable();
 
-                });    
+                });
         }
 
         m_main_sizer->Add(m_tabpanel, 1, wxEXPAND | wxTOP, 1);
@@ -756,13 +756,11 @@ void MainFrame::update_layout()
         first_panel->GetSizer()->Add(m_plater, 1, wxEXPAND);
         m_tabpanel->ChangeSelection(0);
         m_main_sizer->Add(m_tabpanel, 1, wxEXPAND);
-        m_main_sizer->Add(m_webView, 1, wxEXPAND);
+        //m_main_sizer->Add(m_webView, 1, wxEXPAND);
 
         m_plater->Show();
         m_tabpanel->Show();
         m_webView->Hide();
-        m_webView->Raise();
-        m_webView->Enable(); 
 
         if (need_freeze) this->Thaw();
 #endif
@@ -775,13 +773,13 @@ void MainFrame::update_layout()
         m_tabpanel->Hide();
         m_main_sizer->Add(m_tabpanel, 1, wxEXPAND);
         m_plater_page = new wxPanel(m_tabpanel);
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         if (!wxGetApp().tabs_as_menu())
-            dynamic_cast<Notebook*>(m_tabpanel)->InsertBtPage(0, m_plater_page, _L("Platter"), std::string("plater"), icon_size, true);
+            dynamic_cast<Notebook*>(m_tabpanel)->InsertBtPage(0, m_plater_page, _L("Plater"), std::string("plater"), icon_size, true);
         else
 #endif
         m_tabpanel->InsertPage(0, m_plater_page, _L("Platter")); // empty panel just for Platter tab */
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         if (!wxGetApp().tabs_as_menu())
             dynamic_cast<Notebook*>(m_tabpanel)->GetBtnsListCtrl()->InsertSpacer(1, 40);
 #endif
@@ -798,7 +796,7 @@ void MainFrame::update_layout()
         m_tabpanel->Show();
         m_plater->Show();
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         if (wxGetApp().tabs_as_menu())
             show_tabs_menu(false);
 #endif
@@ -815,7 +813,7 @@ void MainFrame::update_layout()
     }
     }
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     // Sizer with buttons for mode changing
     m_plater->sidebar().show_mode_sizer(wxGetApp().tabs_as_menu() || ( m_layout != ESettingsLayout::Old && m_layout != ESettingsLayout::Tabs));
 #endif
@@ -853,7 +851,7 @@ void MainFrame::update_layout()
 //#ifdef __APPLE__
 //    // Using SetMinSize() on Mac messes up the window position in some cases
 //    // cf. https://groups.google.com/forum/#!topic/wx-users/yUKPBBfXWO0
-//    // So, if we haven't possibility to set MinSize() for the MainFrame, 
+//    // So, if we haven't possibility to set MinSize() for the MainFrame,
 //    // set the MinSize() as a half of regular  for the m_plater and m_tabpanel, when settings layout is in slNew mode
 //    // Otherwise, MainFrame will be maximized by height
 //    if (m_layout == ESettingsLayout::Hidden) {
@@ -864,8 +862,8 @@ void MainFrame::update_layout()
 //    }
 //#endif
     
-#ifdef __APPLE__
-    m_plater->sidebar().change_top_border_for_mode_sizer(m_layout != ESettingsLayout::Tabs && m_layout != ESettingsLayout::Old);
+#if __APPLE__
+   m_plater->sidebar().change_top_border_for_mode_sizer(m_layout != ESettingsLayout::Tabs && m_layout != ESettingsLayout::Old);
 #endif
     
     Layout();
@@ -876,14 +874,14 @@ void MainFrame::update_layout()
 void MainFrame::shutdown()
 {
 #ifdef _WIN32
-	if (m_hDeviceNotify) {
-	::UnregisterDeviceNotification(HDEVNOTIFY(m_hDeviceNotify));
-	m_hDeviceNotify = nullptr;
-	}
- 	if (m_ulSHChangeNotifyRegister) {
+    if (m_hDeviceNotify) {
+    ::UnregisterDeviceNotification(HDEVNOTIFY(m_hDeviceNotify));
+    m_hDeviceNotify = nullptr;
+    }
+     if (m_ulSHChangeNotifyRegister) {
         SHChangeNotifyDeregister(m_ulSHChangeNotifyRegister);
         m_ulSHChangeNotifyRegister = 0;
- 	}
+     }
 #endif // _WIN32
 
     if (m_plater != nullptr) {
@@ -915,17 +913,17 @@ void MainFrame::shutdown()
         m_settings_dialog.Close();
 
     if (m_plater != nullptr) {
-	// Stop the background thread (Windows and Linux).
-	// Disconnect from a 3DConnextion driver (OSX).
+    // Stop the background thread (Windows and Linux).
+    // Disconnect from a 3DConnextion driver (OSX).
     m_plater->get_mouse3d_controller().shutdown();
-	// Store the device parameter database back to appconfig.
+    // Store the device parameter database back to appconfig.
     m_plater->get_mouse3d_controller().save_config(*wxGetApp().app_config);
     }
 
     // Stop the background thread of the removable drive manager, so that no new updates will be sent to the Plater.
     wxGetApp().removable_drive_manager()->shutdown();
-	//stop listening for messages from other instances
-	wxGetApp().other_instance_message_handler()->shutdown(this);
+    //stop listening for messages from other instances
+    wxGetApp().other_instance_message_handler()->shutdown(this);
     // Save the slic3r.ini.Usually the ini file is saved from "on idle" callback,
     // but in rare cases it may not have been called yet.
     wxGetApp().app_config->save();
@@ -934,7 +932,7 @@ void MainFrame::shutdown()
 //         Slic3r::GUI::deregister_on_request_update_callback();
 
     // set to null tabs and a plater
-    // to avoid any manipulations with them from App->wxEVT_IDLE after of the mainframe closing 
+    // to avoid any manipulations with them from App->wxEVT_IDLE after of the mainframe closing
     wxGetApp().tabs_list.clear();
     wxGetApp().plater_ = nullptr;
 }
@@ -942,7 +940,7 @@ void MainFrame::shutdown()
 //for settings when switching from fff to sla
 void MainFrame::change_tab(Tab* old_tab, Tab* new_tab)
 {
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     if (!wxGetApp().tabs_as_menu())
     {
         int icon_size = 0;
@@ -1004,19 +1002,19 @@ void MainFrame::update_title()
     }
 
     std::string build_id = wxGetApp().is_editor() ? SLIC3R_BUILD_ID : GCODEVIEWER_BUILD_ID;
-    size_t 		idx_plus = build_id.find('+');
+    size_t         idx_plus = build_id.find('+');
     if (idx_plus != build_id.npos) {
-    	// Parse what is behind the '+'. If there is a number, then it is a build number after the label, and full build ID is shown.
-    	int commit_after_label;
-    	if (! boost::starts_with(build_id.data() + idx_plus + 1, "UNKNOWN") && 
+        // Parse what is behind the '+'. If there is a number, then it is a build number after the label, and full build ID is shown.
+        int commit_after_label;
+        if (! boost::starts_with(build_id.data() + idx_plus + 1, "UNKNOWN") &&
             (build_id.at(idx_plus + 1) == '-' || sscanf(build_id.data() + idx_plus + 1, "%d-", &commit_after_label) == 0)) {
-    		// It is a release build.
-    		build_id.erase(build_id.begin() + idx_plus, build_id.end());    		
+            // It is a release build.
+            build_id.erase(build_id.begin() + idx_plus, build_id.end());
 #if defined(_WIN32) && ! defined(_WIN64)
-    		// People are using 32bit slicer on a 64bit machine by mistake. Make it explicit.
+            // People are using 32bit slicer on a 64bit machine by mistake. Make it explicit.
             build_id += " 32 bit";
 #endif
-    	}
+        }
     }
 
     title += wxString(SLIC3R_APP_NAME) + "_" + wxString(SLIC3R_VERSION) ;
@@ -1030,7 +1028,7 @@ void MainFrame::init_tabpanel()
 {
     // wxNB_NOPAGETHEME: Disable Windows Vista theme for the Notebook background. The theme performance is terrible on Windows 10
     // with multiple high resolution displays connected.
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     if (wxGetApp().tabs_as_menu()) {
         m_tabpanel = new wxSimplebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP | wxTAB_TRAVERSAL | wxNB_NOPAGETHEME);
         wxGetApp().UpdateDarkUI(m_tabpanel);
@@ -1116,7 +1114,7 @@ void MainFrame::init_tabpanel()
             else
                 last_selected_setting_tab = m_tabpanel->GetSelection() - 1;
         } else if (this->m_layout == ESettingsLayout::Tabs) {
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
             int bt_idx_sel = 0;
             if (wxGetApp().tabs_as_menu()) {
                 bt_idx_sel = (uint8_t)get_tab_bt_selected(this->m_menubar, this->get_layout());
@@ -1160,7 +1158,7 @@ void MainFrame::init_tabpanel()
                 return;
             }
             bool need_freeze = !this->IsFrozen();
-            bool need_freeze_plater = false;
+            bool need_freeze_plater = true;
             if(need_freeze) Freeze();
             else {
                 need_freeze_plater = !m_plater->IsFrozen();
@@ -1189,30 +1187,32 @@ void MainFrame::init_tabpanel()
 #endif
 
             if (m_tabpanel->GetSelection() == 0) {
-                m_plater->Show();
+                this->m_plater->Show();
+                this->m_webView->Hide();
                 this->m_plater->select_view_3D("3D");
+                this->m_plater->refresh_print();
            } else if (m_tabpanel->GetSelection() == 1) {
-                m_plater->Show();
+               this->m_plater->Show();
+               this->m_webView->Hide();
                 if (this->m_plater->get_force_preview() != Preview::ForceState::ForceExtrusions) {
                     this->m_plater->set_force_preview(Preview::ForceState::ForceExtrusions);
                     this->m_plater->select_view_3D("Preview");
                     this->m_plater->refresh_print();
                 }
             } else if (m_tabpanel->GetSelection() == 2) {
-                m_plater->Show();
+                this->m_plater->Show();
+                this->m_webView->Hide();
                 if (this->m_plater->get_force_preview() != Preview::ForceState::ForceGcode) {
                     this->m_plater->set_force_preview(Preview::ForceState::ForceGcode);
                     this->m_plater->select_view_3D("Preview");
+                    this->m_plater->sidebar().MacDoRedraw(2);
                     this->m_plater->refresh_print();
                 }
             } else if (m_tabpanel->GetSelection() == 3) {
                 this->m_plater->Hide();
 
-                m_webViewPanel->Show();
-                m_webViewPanel->Enable();
-
-                m_webView->Show();
-                m_webView->Enable();
+                this->m_webView->Show();
+                this->m_webView->Enable();
             }
 
             m_tabpanel->GetCurrentPage()->GetSizer()->Add(m_plater, 1, wxEXPAND);
@@ -1290,9 +1290,6 @@ void MainFrame::load_printer_url()
     }
  }
 
-
-
-
 #ifdef WIN32
 void MainFrame::register_win32_callbacks()
 {
@@ -1327,14 +1324,14 @@ void MainFrame::register_win32_callbacks()
             //SHCNE_UPDATEITEM,                                                     // Events of interest - use SHCNE_ALLEVENTS for all events
             WM_USER_MEDIACHANGED,                                                   // Notification message to be sent upon the event
             1,                                                                      // Number of entries in the pfsne array
-            &shCNE);                                                                // Array of SHChangeNotifyEntry structures that 
-                                                                                    // contain the notifications. This array should 
+            &shCNE);                                                                // Array of SHChangeNotifyEntry structures that
+                                                                                    // contain the notifications. This array should
                                                                                     // always be set to one when calling SHChnageNotifyRegister
                                                                                     // or SHChangeNotifyDeregister will not work properly.
         assert(m_ulSHChangeNotifyRegister != 0);    // Shell notification failed
     } else {
         // Failed to get desktop location
-        assert(false); 
+        assert(false);
     }
 
     {
@@ -1366,7 +1363,7 @@ void MainFrame::add_created_tab(Tab* panel)
     const auto printer_tech = wxGetApp().preset_bundle->printers.get_edited_preset().printer_technology();
 
     if (panel->supports_printer_technology(printer_tech)) {
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         if (!wxGetApp().tabs_as_menu()) {
             int icon_size = 0;
             try {
@@ -1398,9 +1395,9 @@ bool MainFrame::is_active_and_shown_tab(Tab* tab)
 
 bool MainFrame::can_start_new_project() const
 {
-    return m_plater && (!m_plater->get_project_filename(".3mf").IsEmpty() || 
+    return m_plater && (!m_plater->get_project_filename(".3mf").IsEmpty() ||
                         GetTitle().StartsWith('*')||
-                        wxGetApp().has_current_preset_changes() || 
+                        wxGetApp().has_current_preset_changes() ||
                         !m_plater->model().objects.empty() );
 }
 
@@ -1490,23 +1487,23 @@ bool MainFrame::can_send_gcode() const
 
 bool MainFrame::can_export_gcode_sd() const
 {
-	if (m_plater == nullptr)
-		return false;
+    if (m_plater == nullptr)
+        return false;
 
-	if (m_plater->model().objects.empty())
-		return false;
+    if (m_plater->model().objects.empty())
+        return false;
 
-	if (m_plater->is_export_gcode_scheduled())
-		return false;
+    if (m_plater->is_export_gcode_scheduled())
+        return false;
 
-	// TODO:: add other filters
+    // TODO:: add other filters
 
-	return wxGetApp().removable_drive_manager()->status().has_removable_drives;
+    return wxGetApp().removable_drive_manager()->status().has_removable_drives;
 }
 
 bool MainFrame::can_eject() const
 {
-	return wxGetApp().removable_drive_manager()->status().has_eject;
+    return wxGetApp().removable_drive_manager()->status().has_eject;
 }
 
 bool MainFrame::can_slice() const
@@ -1522,8 +1519,8 @@ bool MainFrame::can_change_view() const
     default:                   { return false; }
     case ESettingsLayout::Hidden: { return m_plater->IsShown(); }
     case ESettingsLayout::Dlg: { return true; }
-    case ESettingsLayout::Old: 
-    case ESettingsLayout::Tabs: { 
+    case ESettingsLayout::Old:
+    case ESettingsLayout::Tabs: {
         int page_id = m_tabpanel->GetSelection();
         return page_id != wxNOT_FOUND && selected_tab() <= TabPosition::tpLastPlater;
     }
@@ -1561,7 +1558,7 @@ void MainFrame::on_dpi_changed(const wxRect& suggested_rect)
     wxGetApp().update_fonts(this);
     this->SetFont(this->normal_font());
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     // update common mode sizer
     if (!wxGetApp().tabs_as_menu())
         dynamic_cast<Notebook*>(m_tabpanel)->Rescale();
@@ -1610,7 +1607,7 @@ void MainFrame::on_sys_color_changed()
     wxGetApp().UpdateDarkUI(m_tabpanel);
  //   m_statusbar->update_dark_ui();
 #endif
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     // update common mode sizer
     if (!wxGetApp().tabs_as_menu())
         dynamic_cast<Notebook*>(m_tabpanel)->Rescale();
@@ -1673,7 +1670,7 @@ static wxMenu* generate_help_menu()
     else
         append_menu_item(helpMenu, wxID_ANY, wxString::Format(_L("&About %s"), GCODEVIEWER_APP_NAME), _L("Show about dialog"),
             [](wxCommandEvent&) { Slic3r::GUI::about(); });
-    append_menu_item(helpMenu, wxID_ANY, _L("Show Tip of the Day") 
+    append_menu_item(helpMenu, wxID_ANY, _L("Show Tip of the Day")
 #if 0//debug
         + "\tCtrl+Shift+T"
 #endif
@@ -1697,10 +1694,10 @@ static void add_common_view_menu_items(wxMenu* view_menu, MainFrame* mainFrame, 
     append_menu_item(view_menu, wxID_ANY, _L("Iso") + sep + "&0", _L("Iso View"), [mainFrame](wxCommandEvent&) { mainFrame->select_view("iso"); },
         "", nullptr, [can_change_view]() { return can_change_view(); }, mainFrame);
     view_menu->AppendSeparator();
-    //TRN To be shown in the main menu View->Top 
+    //TRN To be shown in the main menu View->Top
     append_menu_item(view_menu, wxID_ANY, _L("Top") + sep + "&1", _L("Top View"), [mainFrame](wxCommandEvent&) { mainFrame->select_view("top"); },
         "", nullptr, [can_change_view]() { return can_change_view(); }, mainFrame);
-    //TRN To be shown in the main menu View->Bottom 
+    //TRN To be shown in the main menu View->Bottom
     append_menu_item(view_menu, wxID_ANY, _L("Bottom") + sep + "&2", _L("Bottom View"), [mainFrame](wxCommandEvent&) { mainFrame->select_view("bottom"); },
         "", nullptr, [can_change_view]() { return can_change_view(); }, mainFrame);
     append_menu_item(view_menu, wxID_ANY, _L("Front") + sep + "&3", _L("Front View"), [mainFrame](wxCommandEvent&) { mainFrame->select_view("front"); },
@@ -1821,9 +1818,9 @@ void MainFrame::init_menubar_as_editor()
             [this](wxCommandEvent&) { if (m_plater) m_plater->send_gcode(); }, "export_gcode", nullptr,
             [this](){return can_send_gcode(); }, this);
         m_changeable_menu_items.push_back(item_send_gcode);
-		append_menu_item(export_menu, wxID_ANY, _L("Export G-code to SD Card / Flash Drive") + dots + "\tCtrl+U", _L("Export current plate as G-code to SD card / Flash drive"),
-			[this](wxCommandEvent&) { if (m_plater) m_plater->export_gcode(true); }, "export_to_sd", nullptr,
-			[this]() {return can_export_gcode_sd(); }, this);
+        append_menu_item(export_menu, wxID_ANY, _L("Export G-code to SD Card / Flash Drive") + dots + "\tCtrl+U", _L("Export current plate as G-code to SD card / Flash drive"),
+            [this](wxCommandEvent&) { if (m_plater) m_plater->export_gcode(true); }, "export_to_sd", nullptr,
+            [this]() {return can_export_gcode_sd(); }, this);
         export_menu->AppendSeparator();
         append_menu_item(export_menu, wxID_ANY, _L("Export &Plate") + dots, _L("Export current plate (options available in the dialog)"),
             [this](wxCommandEvent&) { if (m_plater) m_plater->export_platter(); }, "export_plater", nullptr,
@@ -1856,9 +1853,9 @@ void MainFrame::init_menubar_as_editor()
             []() {return true; }, this);
         append_submenu(fileMenu, export_menu, wxID_ANY, _L("&Export"), "");
 
-		append_menu_item(fileMenu, wxID_ANY, _L("Ejec&t SD Card / Flash Drive") + dots + "\tCtrl+T", _L("Eject SD card / Flash drive after the G-code was exported to it."),
-			[this](wxCommandEvent&) { if (m_plater) m_plater->eject_drive(); }, "eject_sd", nullptr,
-			[this]() {return can_eject(); }, this);
+        append_menu_item(fileMenu, wxID_ANY, _L("Ejec&t SD Card / Flash Drive") + dots + "\tCtrl+T", _L("Eject SD card / Flash drive after the G-code was exported to it."),
+            [this](wxCommandEvent&) { if (m_plater) m_plater->eject_drive(); }, "eject_sd", nullptr,
+            [this]() {return can_eject(); }, this);
 
         fileMenu->AppendSeparator();
 
@@ -1989,7 +1986,7 @@ void MainFrame::init_menubar_as_editor()
 
         windowMenu->AppendSeparator();
         append_menu_item(windowMenu, wxID_ANY, _L("Shape Gallery"), _L("Open the dialog to modify shape gallery"),
-            [this](wxCommandEvent&) { 
+            [this](wxCommandEvent&) {
                 GalleryDialog dlg(this, true);
                 if (dlg.ShowModal() == wxID_OK) {
                     wxArrayString input_files;
@@ -2008,7 +2005,7 @@ void MainFrame::init_menubar_as_editor()
             [this](wxCommandEvent&) { start_new_slicer(); }, "", nullptr, [this]() {return m_plater != nullptr && wxGetApp().app_config->get("single_instance") != "1"; }, this);
 
         windowMenu->AppendSeparator();
-        append_menu_item(windowMenu, wxID_ANY, _L("Compare Presets")/* + "\tCtrl+F"*/, _L("Compare presets"), 
+        append_menu_item(windowMenu, wxID_ANY, _L("Compare Presets")/* + "\tCtrl+F"*/, _L("Compare presets"),
             [this](wxCommandEvent&) { diff_dialog.show();}, "compare", nullptr, []() {return true; }, this);
     }
 
@@ -2027,9 +2024,9 @@ void MainFrame::init_menubar_as_editor()
 #ifndef __APPLE__
         // OSX adds its own menu item to toggle fullscreen.
         append_menu_check_item(viewMenu, wxID_ANY, _L("&Fullscreen") + "\t" + "F11", _L("Fullscreen"),
-            [this](wxCommandEvent&) { this->ShowFullScreen(!this->IsFullScreen(), 
+            [this](wxCommandEvent&) { this->ShowFullScreen(!this->IsFullScreen(),
                 // wxFULLSCREEN_ALL: wxFULLSCREEN_NOMENUBAR | wxFULLSCREEN_NOTOOLBAR | wxFULLSCREEN_NOSTATUSBAR | wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION
-                wxFULLSCREEN_NOSTATUSBAR | wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION); }, 
+                wxFULLSCREEN_NOSTATUSBAR | wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION); },
             this, []() { return true; }, [this]() { return this->IsFullScreen(); }, this);
 #endif // __APPLE__
     }
@@ -2107,7 +2104,7 @@ void MainFrame::init_menubar_as_editor()
     wxGetApp().add_config_menu(m_menubar);
     m_menubar->Append(helpMenu, _L("&Help"));
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     if (wxGetApp().tabs_as_menu()) {
         add_tabs_as_menu(m_menubar, this, this);
     }
@@ -2286,7 +2283,7 @@ void MainFrame::quick_slice(const int qs)
 
     auto bed_shape = Slic3r::Polygon::new_scale(config.option<ConfigOptionPoints>("bed_shape")->values);
 //     auto print_center = Slic3r::Pointf->new_unscale(bed_shape.bounding_box().center());
-// 
+//
 //     auto sprint = new Slic3r::Print::Simple(
 //         print_center = > print_center,
 //         status_cb = > [](int percent, const wxString& msg) {
@@ -2307,11 +2304,11 @@ void MainFrame::quick_slice(const int qs)
     if (qs & qsReslice) {
         if (!m_qs_last_output_file.IsEmpty())
             output_file = m_qs_last_output_file;
-    } 
+    }
     else if (qs & qsSaveAs) {
         // The following line may die if the output_filename_format template substitution fails.
         wxFileDialog dlg(this, from_u8((boost::format(_utf8(L("Save %s file as:"))) % ((qs & qsExportSVG) ? _L("SVG") : _L("G-code"))).str()),
-            wxGetApp().app_config->get_last_output_dir(get_dir_name(output_file)), get_base_name(input_file), 
+            wxGetApp().app_config->get_last_output_dir(get_dir_name(output_file)), get_base_name(input_file),
             qs & qsExportSVG ? file_wildcards(FT_SVG) : file_wildcards(FT_GCODE),
             wxFD_SAVE | (wxGetApp().app_config->get_show_overwrite_dialog() ? wxFD_OVERWRITE_PROMPT : 0));
         if (dlg.ShowModal() != wxID_OK)
@@ -2320,7 +2317,7 @@ void MainFrame::quick_slice(const int qs)
         if (!(qs & qsExportSVG))
             m_qs_last_output_file = output_file;
         wxGetApp().app_config->update_last_output_dir(get_dir_name(output_file));
-    } 
+    }
     else if (qs & qsExportPNG) {
         wxFileDialog dlg(this, _L("Save zip file as:"),
             wxGetApp().app_config->get_last_output_dir(get_dir_name(output_file)),
@@ -2432,7 +2429,7 @@ void MainFrame::load_config_file(bool from_prusa)
     wxFileDialog dlg(this, _L("Select configuration to load:"),
             !m_last_config.IsEmpty() ? get_dir_name(m_last_config) : wxGetApp().app_config->get_last_dir(),
             "config.ini", "INI files (*.ini, *.gcode)|*.ini;*.INI;*.gcode;*.g", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-	wxString file;
+    wxString file;
     if (dlg.ShowModal() == wxID_OK)
         file = dlg.GetPath();
     if (! file.IsEmpty() && this->load_config_file(file.ToUTF8().data(), from_prusa)) {
@@ -2481,7 +2478,7 @@ void MainFrame::export_configbundle(bool export_physical_printers /*= false*/)
         try {
             wxGetApp().preset_bundle->export_configbundle(file.ToUTF8().data(), false, export_physical_printers);
         } catch (const std::exception& ex) {
-			show_error(this, ex.what());
+            show_error(this, ex.what());
         }
     }
 }
@@ -2500,7 +2497,7 @@ void MainFrame::load_configbundle(wxString file/* = wxEmptyString*/, bool from_p
         if (dlg.ShowModal() != wxID_OK)
             return;
         file = dlg.GetPath();
-		}
+        }
 
     wxGetApp().app_config->update_config_dir(get_dir_name(file));
 
@@ -2510,7 +2507,7 @@ void MainFrame::load_configbundle(wxString file/* = wxEmptyString*/, bool from_p
         PresetBundle::LoadConfigBundleAttributes lcba{ PresetBundle::LoadConfigBundleAttribute::SaveImported };
         // Report all substitutions.
         std::tie(config_substitutions, presets_imported) = wxGetApp().preset_bundle->load_configbundle(
-            file.ToUTF8().data(), 
+            file.ToUTF8().data(),
             (from_prusa ? lcba | PresetBundle::LoadConfigBundleAttribute::ConvertFromPrusa : lcba),
             ForwardCompatibilitySubstitutionRule::Enable);
     } catch (const std::exception &ex) {
@@ -2522,7 +2519,7 @@ void MainFrame::load_configbundle(wxString file/* = wxEmptyString*/, bool from_p
         show_substitutions_info(config_substitutions);
 
     // Load the currently selected preset into the GUI, update the preset selection box.
-	wxGetApp().load_current_presets();
+    wxGetApp().load_current_presets();
 
     const auto message = wxString::Format(_L("%d presets successfully imported."), presets_imported);
     Slic3r::GUI::show_info(this, message, wxString("Info"));
@@ -2532,23 +2529,23 @@ void MainFrame::load_configbundle(wxString file/* = wxEmptyString*/, bool from_p
 // Also update the plater with the new presets.
 void MainFrame::load_config(const DynamicPrintConfig& config)
 {
-	PrinterTechnology printer_technology = wxGetApp().preset_bundle->printers.get_edited_preset().printer_technology();
-	const auto       *opt_printer_technology = config.option<ConfigOptionEnum<PrinterTechnology>>("printer_technology");
-	if (opt_printer_technology != nullptr && opt_printer_technology->value != printer_technology) {
-		printer_technology = opt_printer_technology->value;
-		this->plater()->set_printer_technology(printer_technology);
-	}
+    PrinterTechnology printer_technology = wxGetApp().preset_bundle->printers.get_edited_preset().printer_technology();
+    const auto       *opt_printer_technology = config.option<ConfigOptionEnum<PrinterTechnology>>("printer_technology");
+    if (opt_printer_technology != nullptr && opt_printer_technology->value != printer_technology) {
+        printer_technology = opt_printer_technology->value;
+        this->plater()->set_printer_technology(printer_technology);
+    }
 #if 0
     for (auto tab : wxGetApp().tabs_list)
-		if (tab->supports_printer_technology(printer_technology)) {
-			if (tab->type() == Slic3r::Preset::TYPE_PRINTER)
-				static_cast<TabPrinter*>(tab)->update_pages();
+        if (tab->supports_printer_technology(printer_technology)) {
+            if (tab->type() == Slic3r::Preset::TYPE_PRINTER)
+                static_cast<TabPrinter*>(tab)->update_pages();
         tab->load_config(config);
-		}
+        }
     if (m_plater)
         m_plater->on_config_change(config);
 #else
-	// Load the currently selected preset into the GUI, update the preset selection box.
+    // Load the currently selected preset into the GUI, update the preset selection box.
     //FIXME this is not quite safe for multi-extruder printers,
     // as the number of extruders is not adjusted for the vector values.
     // (see PresetBundle::update_multi_material_filament_presets())
@@ -2556,10 +2553,10 @@ void MainFrame::load_config(const DynamicPrintConfig& config)
     for (auto tab : wxGetApp().tabs_list)
         if (tab->supports_printer_technology(printer_technology)) {
             // Only apply keys, which are present in the tab's config. Ignore the other keys.
-			for (const std::string &opt_key : tab->get_config()->diff(config))
-				// Ignore print_settings_id, printer_settings_id, filament_settings_id etc.
-				if (! boost::algorithm::ends_with(opt_key, "_settings_id"))
-					tab->get_config()->option(opt_key)->set(config.option(opt_key));
+            for (const std::string &opt_key : tab->get_config()->diff(config))
+                // Ignore print_settings_id, printer_settings_id, filament_settings_id etc.
+                if (! boost::algorithm::ends_with(opt_key, "_settings_id"))
+                    tab->get_config()->option(opt_key)->set(config.option(opt_key));
         }
     
     wxGetApp().load_current_presets();
@@ -2619,7 +2616,7 @@ MainFrame::TabPosition MainFrame::selected_tab() const
             return TabPosition((uint8_t) TabPosition::tpPrintSettings + m_tabpanel->GetSelection() - 1);
         }
     } else if (m_layout == ESettingsLayout::Tabs) {
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         int bt_idx_sel = 0;
         if (wxGetApp().tabs_as_menu()) {
             bt_idx_sel = m_tabpanel->GetSelection();
@@ -2691,7 +2688,7 @@ void MainFrame::select_tab(TabPosition tab /* = Any*/, bool keep_tab_type)
         } else if (tab <= TabPosition::tpLastSettings) {
             //select setting
             new_selection = (uint8_t) tab - (uint8_t) TabPosition::tpPrintSettings;
-            if (tab == TabPosition::tpLastSettings) 
+            if (tab == TabPosition::tpLastSettings)
                 new_selection = m_last_selected_setting_tab > 2 ? 0 : m_last_selected_setting_tab;
             //push to the correct position
             if (m_layout == ESettingsLayout::Tabs)
@@ -2700,7 +2697,7 @@ void MainFrame::select_tab(TabPosition tab /* = Any*/, bool keep_tab_type)
                 new_selection = new_selection + 1;
         }
 
-#ifndef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         if (m_tabpanel->GetPageCount() == 0) return; // failsafe
         if (m_tabpanel->GetSelection() != (int)new_selection)
             m_tabpanel->SetSelection(new_selection);
@@ -2714,14 +2711,17 @@ void MainFrame::select_tab(TabPosition tab /* = Any*/, bool keep_tab_type)
                     page_idx -= 2;
             }
             if (Tab* cur_tab = dynamic_cast<Tab*>(m_tabpanel->GetPage(page_idx)))
-                update_marker_for_tabs_menu((m_layout != ESettingsLayout::Dlg ? m_menubar : m_settings_dialog.menubar()), cur_tab->title(), new_selection, m_layout);
+              //  update_marker_for_tabs_menu((m_layout != ESettingsLayout::Dlg ? m_menubar : m_settings_dialog.menubar()), cur_tab->title(), new_selection, m_layout);
+                ;
             else if (tab == TabPosition::tpLastPlater && m_layout == ESettingsLayout::Old)
                 m_plater->get_current_canvas3D()->render();
             else if (m_layout != ESettingsLayout::Dlg)
-                update_marker_for_tabs_menu( m_menubar, "", new_selection, m_layout);
+                //update_marker_for_tabs_menu( m_menubar, "", new_selection, m_layout);
             int last_sel = m_tabpanel->GetSelection();
             m_tabpanel->SetSelection(page_idx);
             if (m_layout == ESettingsLayout::Tabs) { //as it's not done by the button callback, as it call this, it has to
+                int last_sel = m_tabpanel->GetSelection();
+
                 if (last_sel > 0 && page_idx < 3 && (page_idx == m_last_selected_plater_tab || m_last_selected_plater_tab > 2)) {
                     // hack to set a correct refresh of the app (can't find anythign else that worked) when going from settings to last plater
                     if (tab == TabPosition::tpPlater || (tab == TabPosition::tpLastPlater && m_last_selected_plater_tab == 0)) {
@@ -2749,10 +2749,10 @@ void MainFrame::select_tab(TabPosition tab /* = Any*/, bool keep_tab_type)
                 }
             }
         } else {
-            Notebook* notebook = static_cast<Notebook*>(m_tabpanel);
-            if (notebook->GetPageCount() == 0) return; // failsafe
-            if (notebook->GetBtSelection() != (int)new_selection)
-                notebook->SetBtSelection(new_selection);
+           // Notebook* notebook = static_cast<Notebook*>(m_tabpanel);
+            //if (notebook->GetPageCount() == 0) return; // failsafe
+            //if (notebook->GetBtSelection() != (int)new_selection)
+               // notebook->SetBtSelection(new_selection);
         }
 #endif
         if (tab == TabPosition::tpLastPlater && m_layout == ESettingsLayout::Old)
@@ -2828,12 +2828,12 @@ void MainFrame::select_tab(TabPosition tab /* = Any*/, bool keep_tab_type)
         else
             select(false);
     }
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     else if (m_layout == ESettingsLayout::Tabs && !wxGetApp().tabs_as_menu()) {
 #else
     else if (m_layout == ESettingsLayout::Tabs) {
 #endif
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         Notebook* notebook = static_cast<Notebook*>(m_tabpanel);
         //get the selected button, not the selected panel
         int bt_idx_sel = notebook->GetBtSelection();
@@ -2978,15 +2978,15 @@ void MainFrame::update_ui_from_settings()
         tab->update_ui_from_settings();
 }
 
-std::string MainFrame::get_base_name(const wxString &full_name, const char *extension) const 
+std::string MainFrame::get_base_name(const wxString &full_name, const char *extension) const
 {
     boost::filesystem::path filename = boost::filesystem::path(full_name.wx_str()).filename();
     if (extension != nullptr)
-		filename = filename.replace_extension(extension);
+        filename = filename.replace_extension(extension);
     return filename.string();
 }
 
-std::string MainFrame::get_dir_name(const wxString &full_name) const 
+std::string MainFrame::get_dir_name(const wxString &full_name) const
 {
     return boost::filesystem::path(full_name.wx_str()).parent_path().string();
 }
@@ -3064,7 +3064,7 @@ SettingsDialog::SettingsDialog(MainFrame* mainframe)
     //just hide the Frame on closing
     this->Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent& evt) { this->Hide(); });
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     if (wxGetApp().tabs_as_menu()) {
         // menubar
         m_menubar = new wxMenuBar();
@@ -3080,7 +3080,7 @@ SettingsDialog::SettingsDialog(MainFrame* mainframe)
     Fit();
 
     const wxSize min_size = wxSize(85 * em_unit(), 50 * em_unit());
-#ifdef __APPLE__
+#if __APPLE__
     // Using SetMinSize() on Mac messes up the window position in some cases
     // cf. https://groups.google.com/forum/#!topic/wx-users/yUKPBBfXWO0
     SetSize(min_size);
@@ -3099,7 +3099,7 @@ void SettingsDialog::on_dpi_changed(const wxRect& suggested_rect)
     const int& em = em_unit();
     const wxSize& size = wxSize(85 * em, 50 * em);
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     // update common mode sizer
     if (!wxGetApp().tabs_as_menu())
         dynamic_cast<Notebook*>(m_tabpanel)->Rescale();

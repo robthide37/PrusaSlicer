@@ -270,7 +270,7 @@ void Tab::create_preset_tab()
     m_default_label_clr     = wxGetApp().get_label_clr_default();
     m_phony_label_clr       = wxGetApp().get_label_clr_phony();
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     // Sizer with buttons for mode changing
     if (wxGetApp().tabs_as_menu())
 #endif
@@ -540,7 +540,7 @@ void Tab::OnActivate()
     activate_selected_page([](){});
     m_hsizer->Layout();
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     // Because of DarkMode we use our own Notebook (inherited from wxSiplebook) instead of wxNotebook
     // And it looks like first Layout of the page doesn't update a size of the m_presets_choice
     // So we have to set correct size explicitely
@@ -3631,7 +3631,7 @@ void Tab::load_current_preset()
                 for (auto tab : wxGetApp().tabs_list) {
                     if (tab->type() == Preset::TYPE_PRINTER) { // Printer tab shouln't be swapped
                         int cur_selection = wxGetApp().tab_panel()->GetSelection();
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
                         //update icon
                         int icon_size = 0;
                         try {
@@ -3669,10 +3669,6 @@ void Tab::load_current_preset()
                 //wxGetApp().mainframe->update_layout();
                 static_cast<TabPrinter*>(this)->m_printer_technology = printer_technology;
                 m_active_page = tmp_page;
-//#ifdef _MSW_DARK_MODE // change_tab already call update_icon, no need to re-do it here.
-//                if (!wxGetApp().tabs_as_menu())
-//                    dynamic_cast<Notebook*>(wxGetApp().tab_panel())->SetPageImage(wxGetApp().tab_panel()->FindPage(this), printer_technology == ptFFF ? "printer" : "sla_printer");
-//#endif
             }
             on_presets_changed();
             if (printer_technology == ptFFF) {

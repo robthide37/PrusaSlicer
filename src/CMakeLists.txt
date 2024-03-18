@@ -167,7 +167,12 @@ endif ()
 
 # Add the Slic3r GUI library, libcurl, OpenGL and GLU libraries.
 if (SLIC3R_GUI)
+if (MSVC)
     target_link_libraries(Slic3r ws2_32 uxtheme setupapi libslic3r_gui ${wxWidgets_LIBRARIES})
+    else ()
+        target_link_libraries(Slic3r libslic3r_gui ${wxWidgets_LIBRARIES})
+endif()
+    
 target_link_libraries(Slic3r libslic3r_gui)
     if (MSVC)
         # Generate debug symbols even in release mode.

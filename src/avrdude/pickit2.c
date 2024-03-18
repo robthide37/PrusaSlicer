@@ -63,7 +63,9 @@
 #else
 #  include "my_ddk_hidsdi.h"
 #endif
+#if _WIN_32
 #include <setupapi.h>
+#endif
 #else
 #if defined(HAVE_USB_H)
 #  include <usb.h>

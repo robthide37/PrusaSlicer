@@ -106,7 +106,7 @@ echo -n "[3/9] Configuring dependencies..."
     # cmake deps
     echo "Cmake command: cmake .. -DCMAKE_OSX_DEPLOYMENT_TARGET=\"10.14\" ${BUILD_ARCH} "
     pushd deps/build
-    cmake .. -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" $BUILD_ARGS 
+    cmake .. -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" $BUILD_ARGS
     echo "ls deps/build:"
     ls -al
     echo "ls deps/build/dep_GLEW-prefix"
@@ -194,9 +194,9 @@ chmod 755 $ROOT/build/src/BuildMacOSImage.sh
 
 if [[ -n "$BUILD_IMAGE" ]]
 then
-	$ROOT/build/src/BuildMacOSImage.sh -i
+    $ROOT/build/src/BuildMacOSImage.sh -i
 else
-	$ROOT/build/src/BuildMacOSImage.sh
+    $ROOT/build/src/BuildMacOSImage.sh
 fi
 echo "ls -al ROOT/build"
 ls -al $ROOT/build

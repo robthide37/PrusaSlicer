@@ -47,6 +47,7 @@ prusaslicer_add_cmake_project(
         -DwxUSE_WEBVIEW=ON
         ${_wx_edge}
         -DwxUSE_WEBVIEW_IE=OFF
+        -DwxUSE_WEBVIEW_WEBKIT=ON
         -DwxUSE_REGEX=builtin
         -DwxUSE_LIBXPM=builtin
         -DwxUSE_LIBSDL=OFF

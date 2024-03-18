@@ -15,7 +15,12 @@
 #include <wx/webview.h>
 #include <wx/msw/webview_edge.h>
 #include <wx/msw/webview_ie.h>
+
+// Todo add if mac
+
+#if _MSW_
 #include <WebView2.h>
+#endif
 
 namespace Slic3r {
 namespace GUI {

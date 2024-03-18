@@ -2465,7 +2465,7 @@ void GUI_App::update_mode()
 {
     sidebar().update_mode();
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     if (!wxGetApp().tabs_as_menu())
         dynamic_cast<Notebook*>(mainframe->m_tabpanel)->UpdateMode();
 #endif

@@ -2,7 +2,11 @@
 #define slic3r_PrinterWebView_hpp_
 
 #include <wx/wx.h>
+
+#if __MSW__
 #include <WebView2.h>
+#endif
+
 #include <wx/webview.h>
 #include <wx/msw/webview_edge.h>
 #include <wx/msw/webview_ie.h>

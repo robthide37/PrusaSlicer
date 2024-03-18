@@ -22,7 +22,17 @@ void                msw_rescale_menu(wxMenu* menu);
 inline void         msw_rescale_menu(wxMenu* /* menu */) {}
 #endif /* __WXMSW__ */
 
+#if _WIN64
 #define _USE_CUSTOM_NOTEBOOK 1
+
+#elif _WIN32
+#define _USE_CUSTOM_NOTEBOOK 1
+
+#elif __APPLE__
+#define _USE_CUSTOM_NOTEBOOK 0
+
+#endif
+
 
 #ifdef _MSW_DARK_MODE
 #endif

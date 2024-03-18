@@ -27,7 +27,7 @@
 
 #if defined(WIN32NATIVE)
 
-#ifdef HAVE_LIBWS2_32
+#if HAVE_LIBWS2_32
 /* winsock2.h must be included before windows.h from avrdude.h... */
 #  include <winsock2.h>
 #endif
@@ -61,7 +61,7 @@ char* last_error_string(int wsa)
 		FORMAT_MESSAGE_FROM_SYSTEM |
 		FORMAT_MESSAGE_IGNORE_INSERTS,
 		NULL,
-#ifdef HAVE_LIBWS2_32
+#if HAVE_LIBWS2_32
 		wsa ? WSAGetLastError() : GetLastError(),
 #else
 		GetLastError(),
@@ -172,7 +172,7 @@ static int ser_setspeed(union filedescriptor *fd, long baud)
 	}
 }
 
-#ifdef HAVE_LIBWS2_32
+#if HAVE_LIBWS2_32
 static int
 net_open(const char *port, union filedescriptor *fdp)
 {
@@ -259,7 +259,7 @@ static int ser_open(char * port, union pinfo pinfo, union filedescriptor *fdp)
 	 * handle it as a TCP connection to a terminal server.
 	 */
 	if (strncmp(port, "net:", strlen("net:")) == 0) {
-#ifdef HAVE_LIBWS2_32
+#if HAVE_LIBWS2_32
 		return net_open(port + strlen("net:"), fdp);
 #else
 		avrdude_message(MSG_INFO, "%s: ser_open(): "
@@ -331,7 +331,7 @@ static int ser_open(char * port, union pinfo pinfo, union filedescriptor *fdp)
 static void ser_close(union filedescriptor *fd)
 {
 	if (serial_over_ethernet) {
-#ifdef HAVE_LIBWS2_32
+#if HAVE_LIBWS2_32
 		closesocket(fd->ifd);
 		WSACleanup();
 #endif
@@ -362,7 +362,7 @@ static int ser_set_dtr_rts(union filedescriptor *fd, int is_on)
 	}
 }
 
-#ifdef HAVE_LIBWS2_32
+#if HAVE_LIBWS2_32
 static int net_send(union filedescriptor *fd, const unsigned char * buf, size_t buflen)
 {
 	int rc;
@@ -416,7 +416,7 @@ static int net_send(union filedescriptor *fd, const unsigned char * buf, size_t 
 
 static int ser_send(union filedescriptor *fd, const unsigned char * buf, size_t buflen)
 {
-#ifdef HAVE_LIBWS2_32
+#if HAVE_LIBWS2_32
 	if (serial_over_ethernet) {
 		return net_send(fd, buf, buflen);
 	}
@@ -476,7 +476,7 @@ static int ser_send(union filedescriptor *fd, const unsigned char * buf, size_t 
 }
 
 
-#ifdef HAVE_LIBWS2_32
+#if HAVE_LIBWS2_32
 static int net_recv(union filedescriptor *fd, unsigned char * buf, size_t buflen)
 {
 	struct timeval timeout, to2;
@@ -555,7 +555,7 @@ reselect:
 
 static int ser_recv(union filedescriptor *fd, unsigned char * buf, size_t buflen)
 {
-#ifdef HAVE_LIBWS2_32
+#if HAVE_LIBWS2_32
 	if (serial_over_ethernet) {
 		return net_recv(fd, buf, buflen);
 	}

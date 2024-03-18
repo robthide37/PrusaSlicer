@@ -7,7 +7,10 @@
 #include <wx/settings.h>
 #include <wx/string.h>
 #include <wx/filehistory.h>
+
+#if __MSW__
 #include <WebView2.h>
+#endif
 #include <wx/wx.h>
 #include "PrinterWebView.hpp"
 

@@ -539,7 +539,7 @@ void PreferencesDialog::build(size_t selected_tab)
 		option = Option(def, "order_volumes");
 		m_optgroups_gui.back()->append_single_option_line(option);
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
 		def.label = L("Set settings tabs as menu items (experimental)");
 		def.type = coBool;
 		def.tooltip = L("If enabled, Settings Tabs will be placed as menu items. "
@@ -1123,7 +1123,7 @@ void PreferencesDialog::create_icon_size_slider(ConfigOptionsGroup* container)
 
 void PreferencesDialog::create_settings_mode_widget(wxWindow* tab)
 {
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
 	bool disable_new_layout = wxGetApp().tabs_as_menu();
 #endif
 	std::vector<wxString> choices = {  _L("Layout with the tab bar"),
@@ -1142,7 +1142,7 @@ void PreferencesDialog::create_settings_mode_widget(wxWindow* tab)
         0;
 #endif
 
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     if (disable_new_layout) {
         choices = { _L("Layout with the tab bar"),
                     _L("Legacy layout"),
@@ -1181,14 +1181,14 @@ void PreferencesDialog::create_settings_mode_widget(wxWindow* tab)
 
 
         btn->Bind(wxEVT_RADIOBUTTON, [this, id
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
 			, disable_new_layout
 #endif
 		](wxCommandEvent& ) {
             int test = 0;
             m_values["tab_settings_layout_mode"] = (id == test++) ? "1" : "0";
             m_values["old_settings_layout_mode"] = (id == test++) ? "1" : "0";
-#ifdef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
 			if (!disable_new_layout)
 #endif
             m_values["new_settings_layout_mode"] = (id == test++) ? "1" : "0";
