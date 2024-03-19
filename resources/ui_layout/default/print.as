@@ -22,17 +22,48 @@ void s_overhangs_set(bool set)
 	}
 }
 
-int s_nozzle_diameter_fff_get() { 
-	return get_int_idx("extruders_count"); 
-}
 
 // quick settings extruders_count
+int s_nozzle_diameter_idx_get() { 
 
-void s_nozzle_diameter_fff_set(int new_val)
-{
-	int diameter = get_int("extruders_count");
-	set_int("extruders_count", 10);
+	return get_int_idx("nozzle_diameter"); 
 }
+
+void s_nozzle_diameter_idx_set(int new_val)
+{
+	int nozzle_idx = get_int_idx("nozzle_diameter");
+
+	set_nozzle("nozzle_diameter", new_val, nozzle_idx);
+}
+
+
+// GET NOZZLE FOR INDEX 0 
+float s_nozzle_diameter_1_get() { 
+
+	return get_nozzle("nozzle_diameter", 0); 
+}
+
+void s_nozzle_diameter_1_set(float new_val)
+{
+	int nozzle_idx = get_int_idx("nozzle_diameter");
+
+	set_nozzle("nozzle_diameter", new_val, 0);
+}
+
+
+// GET NOZZLE FOR INDEX 1
+float s_nozzle_diameter_2_get() { 
+
+	return get_nozzle("nozzle_diameter", 1); 
+}
+
+void s_nozzle_diameter_2_set(float new_val)
+{
+	int nozzle_idx = get_int_idx("nozzle_diameter");
+
+	set_nozzle("nozzle_diameter", new_val, 1);
+}
+
 
 
 // quick settings orientation
@@ -47,6 +78,7 @@ int s_orientation_fff_get(string &out get_val)
     }
     return 3; // custom
 }
+
 void s_orientation_fff_set(string &in new_val, int idx)
 {
 	if(idx == 0) { // normal

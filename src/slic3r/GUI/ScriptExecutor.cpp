@@ -39,6 +39,11 @@ void as_print_float(float f)
 {
     std::cout << f;
 }
+
+void as_print_int(int i) {
+    std::cout << i;
+}
+
 //void as_register_key(std::string& key) {
 //    if (watching_keys != nullptr)
 //        watching_keys->push_back(key);
@@ -125,8 +130,10 @@ void as_set_int(std::string& key, int val)
     if (result.second == nullptr)
         throw NoDefinitionException("error, can't find int option " + key);
     DynamicPrintConfig& conf = current_script->to_update()[result.first->type()];
+
     if (result.second->type() == ConfigOptionType::coInt) {
         conf.set_key_value(key, new ConfigOptionInt(val));
+
     } else if (result.second->type() == ConfigOptionType::coInts) {
         ConfigOptionInts* new_val = static_cast<ConfigOptionInts*>(result.second->clone());
         new_val->set_at(val, 0);
@@ -179,37 +186,85 @@ double round(float f) {
 }
 
 
+
 int as_get_int_idx(std::string &key) { 
 
     const ConfigOption* opt = get_coll(key).second;
+    std::pair<const PresetCollection *, const ConfigOption *> result = get_coll(key);
+    DynamicPrintConfig conf   = current_script->tab()->m_preset_bundle->full_config();
     
-    if (key == "extruders_count") 
-        return 11;
-    
-    return 10;
+    if (conf.has(key)) {
+          size_t nozzle_diameters = dynamic_cast<const ConfigOptionFloats *>(conf.option("nozzle_diameter"))->values.size();
+            return nozzle_diameters;
+}
+// Default
+return 1;
 }
 
-void as_set_int_idx(std::string &key, int val) {
-    // extruders_count returnen
-    if (!current_script->can_set())
-        return;
+void as_set_int_idx(std::string &key, int val)
+{
+    //TODO: Set nozzle diameter
     std::pair<const PresetCollection *, const ConfigOption *> result = get_coll(key);
-    if (result.second == nullptr)
-        throw NoDefinitionException("error, can't find int option " + key);
-    DynamicPrintConfig &conf = current_script->to_update()[result.first->type()];
-    if (result.second->type() == ConfigOptionType::coInt) {
+    DynamicPrintConfig conf = current_script->tab()->m_preset_bundle->full_config();
+    DynamicPrintConfig &configScript = current_script->to_update()[result.first->type()];
+
+    if (configScript.has(key)) {
+        size_t nozzle_diameters = dynamic_cast<const ConfigOptionFloats *>(conf.option("nozzle_diameter"))->values.size();
         conf.set_key_value(key, new ConfigOptionInt(val));
-    } else if (result.second->type() == ConfigOptionType::coInts) {
-        ConfigOptionInts *new_val = static_cast<ConfigOptionInts *>(result.second->clone());
-        new_val->set_at(val, 0);
-        conf.set_key_value(key, new_val);
-    } else if (result.second->type() == ConfigOptionType::coEnum) {
-      
-        ConfigOption *copy = result.second->clone();
-        copy->setInt(val);
-        conf.set_key_value(key, copy);
     }
 }
+
+float as_get_nozzle(std::string &key, int idx)
+{
+// Empty list
+    std::vector<float> nozzle_diameters_values;
+
+    DynamicPrintConfig conf = current_script->tab()->m_preset_bundle->full_config();
+    
+    float nozzle_diameter = (float) conf.opt_float("nozzle_diameter", idx);
+
+
+    size_t nozzle_diameters_count = dynamic_cast<const ConfigOptionFloats *>(conf.option("nozzle_diameter"))->values.size();
+    for (int i = 0; i < nozzle_diameters_count; i++) { 
+        nozzle_diameters_values.push_back(nozzle_diameter);
+    }
+
+        for (float value : nozzle_diameters_values) { std::cout << value << " "; }
+
+    if (conf.has(key)) {
+        float one = nozzle_diameter;
+
+        return nozzle_diameter;
+    }
+    // Default
+    return 1;
+}
+
+void as_set_nozzle(std::string &key, float val, int idx)
+{
+
+    std::pair<const PresetCollection *, const ConfigOption *> result = get_coll(key);
+
+    if (result.second == nullptr)
+        throw NoDefinitionException("error, can't find float option " + key);
+
+    DynamicPrintConfig  &config         = current_script->tab()->m_preset_bundle->full_config();
+    DynamicPrintConfig &conf   = current_script->to_update()[Preset::TYPE_PRINTER];
+
+    const std::vector<double> &nozzle_diameters = config.option<ConfigOptionFloats>("nozzle_diameter")->values;
+    std::vector<double>        modified_nozzle_diameters = nozzle_diameters;
+
+    if (idx >= 0 && idx < modified_nozzle_diameters.size()) {
+        modified_nozzle_diameters[idx] = val;
+    } else {
+        throw BadOptionTypeException("error, index is out of bounds.");
+    }
+
+    ConfigOptionFloats *new_nozzle_option = new ConfigOptionFloats(modified_nozzle_diameters);
+
+    conf.set_key_value("nozzle_diameter", new_nozzle_option);
+  }
+
 
 
 
@@ -221,6 +276,7 @@ void as_set_float(std::string& key, float f_val)
         throw NoDefinitionException("error, can't find float option " + key);
 
     DynamicPrintConfig& conf = current_script->to_update()[result.first->type()];
+
     if (result.second->type() == ConfigOptionType::coFloat) {
         double old_value = result.second->getFloat();
         double new_val = round(f_val);
@@ -711,6 +767,7 @@ void ScriptContainer::init(const std::string& tab_key, Tab* tab)
 #else
             m_script_engine.get()->RegisterGlobalFunction("void print(string &in)",     AngelScript::asFUNCTION(as_print),          AngelScript::asCALL_CDECL);
             m_script_engine.get()->RegisterGlobalFunction("void print_float(float)",    AngelScript::asFUNCTION(as_print_float),    AngelScript::asCALL_CDECL);
+            m_script_engine.get()->RegisterGlobalFunction("void print_int(int)",    AngelScript::asFUNCTION(as_print_int),    AngelScript::asCALL_CDECL);
             //m_script_engine.get()->RegisterGlobalFunction("void register_key(string &in)", AngelScript::asFUNCTION(as_register_key), AngelScript::asCALL_CDECL);
 
             m_script_engine.get()->RegisterGlobalFunction("bool get_bool(string &in)",                          AngelScript::asFUNCTION(as_get_bool),   AngelScript::asCALL_CDECL);
@@ -723,7 +780,10 @@ void ScriptContainer::init(const std::string& tab_key, Tab* tab)
                                                           AngelScript::asCALL_CDECL);           
                                                           
             m_script_engine.get()->RegisterGlobalFunction("void set_int_idx(string &in, int new_val)", AngelScript::asFUNCTION(as_set_int_idx), AngelScript::asCALL_CDECL);
-
+            
+            m_script_engine.get()->RegisterGlobalFunction("float get_nozzle(string &in, int idx)", AngelScript::asFUNCTION(as_get_nozzle), AngelScript::asCALL_CDECL);    
+            m_script_engine.get()->RegisterGlobalFunction("void set_nozzle(string &in, float new_val, int idx)", AngelScript::asFUNCTION(as_set_nozzle), AngelScript::asCALL_CDECL);  
+            
             m_script_engine.get()->RegisterGlobalFunction("void set_int(string &in, int new_val)",              AngelScript::asFUNCTION(as_set_int),    AngelScript::asCALL_CDECL);
             m_script_engine.get()->RegisterGlobalFunction("float get_float(string &in)",                        AngelScript::asFUNCTION(as_get_float),  AngelScript::asCALL_CDECL);
             m_script_engine.get()->RegisterGlobalFunction("void set_float(string &in, float new_val)",          AngelScript::asFUNCTION(as_set_float),  AngelScript::asCALL_CDECL);

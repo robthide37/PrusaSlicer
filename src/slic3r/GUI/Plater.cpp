@@ -374,6 +374,7 @@ void FreqChangedParams::init()
     DynamicPrintConfig*	config = &wxGetApp().preset_bundle->fff_prints.get_edited_preset().config;
 
     Tab* tab_print = wxGetApp().get_tab(Preset::TYPE_FFF_PRINT);
+    Tab *tab_printer = wxGetApp().get_tab(Preset::TYPE_PRINTER);
 
     /* Not a best solution, but
      * Temporary workaround for right border alignment
@@ -387,8 +388,24 @@ void FreqChangedParams::init()
         return sizer;
     };
     
+    DynamicPrintConfig printer_config = tab_printer->get_config()->full_print_config();
+
     std::vector<PageShp> pages;
-    if(tab_print  != nullptr) pages = tab_print->create_pages("freq_fff.ui");
+    size_t nozzle_diameters = dynamic_cast<const ConfigOptionFloats *>(printer_config.option("nozzle_diameter"))->values.size();
+
+    if(tab_print != nullptr) {
+        switch (nozzle_diameters) {
+            case 1: pages = tab_print->create_pages("freq_fff_1_nozzle.ui");
+                break;
+
+            case 2: pages = tab_print->create_pages("freq_fff_2_nozzles.ui");
+                break;
+            
+            default:
+                break;
+        }
+    }
+
     if (!pages.empty()) {
         m_og->set_config(config);
         m_og->hide_labels();
