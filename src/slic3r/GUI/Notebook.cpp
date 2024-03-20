@@ -1,6 +1,5 @@
 #include "Notebook.hpp"
 
-#ifdef _WIN32
 
 #include "libslic3r/AppConfig.hpp"
 
@@ -247,6 +246,5 @@ void Notebook::EmitEventSelChanged(int16_t new_sel) {
         }
     }
 }
-#endif // _WIN32
-
+ 
 

@@ -117,7 +117,7 @@ wxDEFINE_EVENT(EVT_SLICING_UPDATE,                  SlicingStatusEvent);
 wxDEFINE_EVENT(EVT_SLICING_COMPLETED,               wxCommandEvent);
 wxDEFINE_EVENT(EVT_PROCESS_COMPLETED,               SlicingProcessCompletedEvent);
 wxDEFINE_EVENT(EVT_EXPORT_BEGAN,                    wxCommandEvent);
-
+wxDEFINE_EVENT(EVT_EXTRUDER_CHANGED,                LoadExtruderChangedEvent);
 
 bool Plater::has_illegal_filename_characters(const wxString& wxs_name)
 {
@@ -389,17 +389,20 @@ void FreqChangedParams::init()
     };
     
     DynamicPrintConfig printer_config = tab_printer->get_config()->full_print_config();
-
+    DynamicPrintConfig conf = tab_print->m_preset_bundle->full_config();
+    DynamicPrintConfig &selected_config = tab_printer->m_presets->get_selected_preset().config;
+    
     std::vector<PageShp> pages;
-    size_t nozzle_diameters = dynamic_cast<const ConfigOptionFloats *>(printer_config.option("nozzle_diameter"))->values.size();
-
+    size_t nozzle_diameters = dynamic_cast<const ConfigOptionFloats *>(selected_config.option("nozzle_diameter"))->values.size();
+    std::cout << nozzle_diameters;
+    
+    pages.clear();
+    
     if(tab_print != nullptr) {
-        switch (nozzle_diameters) {
-            case 1: pages = tab_print->create_pages("freq_fff_1_nozzle.ui");
-
-            case 2: pages = tab_print->create_pages("freq_fff_2_nozzles.ui");
-            
-            default: pages = tab_print->create_pages("freq_fff_1_nozzle.ui");
+        if (nozzle_diameters == 1) {
+            pages = tab_print->create_pages("freq_fff_1_nozzle.ui");
+        } else if (nozzle_diameters == 2) {
+            pages = tab_print->create_pages("freq_fff_2_nozzles.ui");
         }
     }
 
@@ -892,7 +895,7 @@ Sidebar::Sidebar(Plater *parent)
             });
     }
 #endif // _WIN32
-
+    
     p->btn_send_gcode->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) { p->plater->send_gcode(); });
 //    p->btn_eject_device->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) { p->plater->eject_drive(); });
 	p->btn_export_gcode_removable->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) { p->plater->export_gcode(true); });
@@ -901,17 +904,25 @@ Sidebar::Sidebar(Plater *parent)
 Sidebar::~Sidebar() {}
 
 void Sidebar::init_filament_combo(PlaterPresetComboBox **combo, const int extr_idx) {
+    
+    const int margin_5  = int(0.5*wxGetApp().em_unit());// 5;
+    p->sizer_params = new wxBoxSizer(wxVERTICAL);
+    
     *combo = new PlaterPresetComboBox(p->presets_panel, Slic3r::Preset::TYPE_FFF_FILAMENT);
 //         # copy icons from first choice
 //         $choice->SetItemBitmap($_, $choices->[0]->GetItemBitmap($_)) for 0..$#presets;
 
     (*combo)->set_extruder_idx(extr_idx);
-
+    
     auto combo_and_btn_sizer = new wxBoxSizer(wxHORIZONTAL);
     combo_and_btn_sizer->Add(*combo, 1, wxEXPAND);
     combo_and_btn_sizer->Add((*combo)->edit_btn, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT,
                             int(0.3*wxGetApp().em_unit()));
 
+
+    // Frequently changed parameters
+    
+    Layout();
     auto /***/sizer_filaments = this->p->sizer_filaments;
     sizer_filaments->Add(combo_and_btn_sizer, 1, wxEXPAND | wxBOTTOM, 1);
 }
@@ -938,7 +949,6 @@ void Sidebar::update_all_preset_comboboxes()
     // Device Tab 
     auto p_mainframe = wxGetApp().mainframe;
     auto cfg         = preset_bundle.printers.get_edited_preset().config;
-
 
     // Update the print choosers to only contain the compatible presets, update the dirty flags.
     if (print_tech == ptFFF)
@@ -6673,13 +6683,17 @@ bool Plater::search_string_getter(int idx, const char** label, const char** tool
 
 void Plater::on_extruders_change(size_t num_extruders)
 {
+    if (m_should_recreate)
+        wxGetApp().recreate_GUI("Updating Layout");
+    m_should_recreate = true;
+
     auto& choices = sidebar().combos_filament();
 
     if (num_extruders == choices.size())
         return;
 
     wxWindowUpdateLocker noUpdates_scrolled_panel(&sidebar()/*.scrolled_panel()*/);
-
+    
     size_t i = choices.size();
     while ( i < num_extruders )
     {
@@ -6694,7 +6708,7 @@ void Plater::on_extruders_change(size_t num_extruders)
 
     // remove unused choices if any
     sidebar().remove_unused_filament_combos(num_extruders);
-
+    
     sidebar().Layout();
     sidebar().scrolled_panel()->Refresh();
 }

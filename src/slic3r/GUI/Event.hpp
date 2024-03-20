@@ -65,6 +65,24 @@ template<class T> struct Event : public wxEvent
     }
 };
 
+class LoadExtruderChangedEvent : public wxCommandEvent {
+    
+public:
+    LoadExtruderChangedEvent(wxEventType eventType = wxEVT_NULL, int id = 0)
+    : wxCommandEvent(eventType, id) {}
+    
+    LoadExtruderChangedEvent(const LoadExtruderChangedEvent &event) : wxCommandEvent(event) { m_extruders_count = event.m_extruders_count; }
+
+    // Required for cloning the event
+    virtual wxEvent *Clone() const wxOVERRIDE { return new LoadExtruderChangedEvent(*this);
+        
+    };
+    
+private:
+    wxInt16 m_extruders_count;
+};
+    
+
 class LoadPrinterViewEvent : public wxCommandEvent
 {
 public:

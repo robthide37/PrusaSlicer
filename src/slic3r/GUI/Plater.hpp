@@ -118,7 +118,7 @@ public:
     void                    collapse(bool collapse);
     void                    check_and_update_searcher(bool respect_mode = false);
     void                    update_ui_from_settings();
-
+    
 #if _USE_CUSTOM_NOTEBOOK
     void                    show_mode_sizer(bool show);
 #endif
@@ -165,6 +165,7 @@ public:
     SLAPrint& sla_print();
     const PrintBase* current_print() const;
 
+    bool m_should_recreate = false;
     bool new_project(std::string project_name = "");
     void load_project();
     void load_project(const wxString& filename);

@@ -126,7 +126,7 @@ private:
     wxColour        m_color_label_default;
     wxColour        m_color_label_phony;
     wxColour        m_color_window_default;
-#ifdef _WIN32
+
     wxColour        m_color_highlight_label_default;
     wxColour        m_color_hovered_btn_label;
     wxColour        m_color_hovered_btn;
@@ -134,7 +134,7 @@ private:
     wxColour        m_color_highlight_default;
     wxColour        m_color_selected_btn_bg;
     bool            m_force_colors_update { false };
-#endif
+
 
     wxFont            m_small_font;
     wxFont            m_bold_font;
@@ -220,7 +220,7 @@ public:
     const wxColour& get_window_default_clr(){ return m_color_window_default; }
 
 
-#ifdef _WIN32
+
     const wxColour& get_label_highlight_clr()   { return m_color_highlight_label_default; }
     const wxColour& get_highlight_default_clr() { return m_color_highlight_default; }
     const wxColour& get_color_hovered_btn_label() { return m_color_hovered_btn_label; }
@@ -230,7 +230,6 @@ public:
 #ifdef _MSW_DARK_MODE
     void            force_menu_update();
 #endif //_MSW_DARK_MODE
-#endif
 
     const wxFont&   small_font()            { return m_small_font; }
     const wxFont&   bold_font()             { return m_bold_font; }

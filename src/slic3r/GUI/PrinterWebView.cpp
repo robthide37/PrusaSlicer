@@ -50,8 +50,7 @@ wxWebView* WebViewPanel::CreateWebView(wxWindow* parent) {
 
 void WebViewPanel::load_url(wxString &url)
 {
-    //    this->Show();
-    //    this->Raise();
+
     if (m_webView == nullptr)
         return;
 

@@ -326,7 +326,7 @@ void MainFrame::update_icon() {
             m_tabpanel->SetPageImage(0, 0);
             m_tabpanel->SetPageImage(1, 1);
             m_tabpanel->SetPageImage(2, 2);
-            m_tabpanel->SetPageImage(3, "tab_device.svg");
+            m_tabpanel->SetPageImage(3, 2);
             m_tabpanel->SetPageImage(4, m_plater->printer_technology() == PrinterTechnology::ptSLA ? 6 : 4);
             m_tabpanel->SetPageImage(5, m_plater->printer_technology() == PrinterTechnology::ptSLA ? 7 : 5);
         }
@@ -429,6 +429,7 @@ static MainFrame::TabPosition get_tab_bt_selected(wxMenuBar* bar, MainFrame::ESe
             break;
         }
     }
+    
     if (idx_selected < 0) return MainFrame::TabPosition::tpLastPlater;
     if (layout == MainFrame::ESettingsLayout::Old) {
         if (idx_selected == 0) return MainFrame::TabPosition::tpLastPlater;
@@ -514,7 +515,7 @@ void MainFrame::update_layout()
 
         if (m_plater->GetParent() != this)
             m_plater->Reparent(this);
-#ifndef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
         for (int i = 0; i < m_tabpanel->GetPageCount();  i++) {
             m_tabpanel->SetPageImage(i, -1);
         }
@@ -579,11 +580,8 @@ void MainFrame::update_layout()
             wxGetApp().app_config->get("tab_settings_layout_mode") == "1" ? ESettingsLayout::Tabs :
             wxGetApp().app_config->get("new_settings_layout_mode") == "1" ? ( wxGetApp().tabs_as_menu() ? ESettingsLayout::Old : ESettingsLayout::Hidden) :
             wxGetApp().app_config->get("dlg_settings_layout_mode") == "1" ? ESettingsLayout::Dlg :
-#ifdef __WXMSW__
                 ESettingsLayout::Tabs);
-#else
-                ESettingsLayout::Old);
-#endif
+
 
     if (m_layout == layout)
         return;
@@ -598,7 +596,6 @@ void MainFrame::update_layout()
     else //init with view_toolbar by default
         m_plater->enable_view_toolbar(true);
 
-#ifdef __WXMSW__
     enum class State {
         noUpdate,
         fromDlg,
@@ -607,7 +604,7 @@ void MainFrame::update_layout()
     State update_scaling_state = //m_layout == ESettingsLayout::Unknown   ? State::noUpdate   : // don't scale settings dialog from the application start
                                  m_layout == ESettingsLayout::Dlg       ? State::fromDlg    :
                                  layout   == ESettingsLayout::Dlg       ? State::toDlg      : State::noUpdate;
-#endif //__WXMSW__
+
 
     ESettingsLayout old_layout = m_layout;
     m_layout = layout;
@@ -1045,7 +1042,7 @@ void MainFrame::init_tabpanel()
     m_tabpanel->Hide();
     m_settings_dialog.set_tabpanel(m_tabpanel);
 
-#ifndef _USE_CUSTOM_NOTEBOOK
+#if _USE_CUSTOM_NOTEBOOK
     int icon_size = 0;
     try {
         icon_size = atoi(wxGetApp().app_config->get("tab_icon_size").c_str());
@@ -1084,6 +1081,7 @@ void MainFrame::init_tabpanel()
     });
 
 #endif
+    
 #ifdef __WXMSW__
     m_tabpanel->Bind(wxEVT_BOOKCTRL_PAGE_CHANGED, [this](wxBookCtrlEvent& e) {
 #else
@@ -1205,7 +1203,6 @@ void MainFrame::init_tabpanel()
                 if (this->m_plater->get_force_preview() != Preview::ForceState::ForceGcode) {
                     this->m_plater->set_force_preview(Preview::ForceState::ForceGcode);
                     this->m_plater->select_view_3D("Preview");
-                    this->m_plater->sidebar().MacDoRedraw(2);
                     this->m_plater->refresh_print();
                 }
             } else if (m_tabpanel->GetSelection() == 3) {

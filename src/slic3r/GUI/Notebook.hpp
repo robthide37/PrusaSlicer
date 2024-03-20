@@ -1,8 +1,6 @@
 #ifndef slic3r_Notebook_hpp_
 #define slic3r_Notebook_hpp_
 
-#ifdef _WIN32
-
 #include <wx/bookctrl.h>
 
 namespace Slic3r {
@@ -622,5 +620,4 @@ private:
     ButtonsListCtrl* m_ctrl{ nullptr };
 
 };
-#endif // _WIN32
 #endif // slic3r_Notebook_hpp_
