@@ -261,7 +261,6 @@ protected:
 	std::map<std::string, size_t>	m_icon_index;		// Map from an icon file name to its index
 	std::map<wxString, std::string>	m_category_icon;	// Map from a category name to an icon file name
 	std::vector<PageShp>			m_pages;
-	Page*				m_active_page {nullptr};
 	bool				m_disable_tree_sel_changed_event {false};
 	bool				m_show_incompatible_presets;
 
@@ -344,6 +343,7 @@ public:
     bool 		completed() const { return m_completed; }
 	bool		supports_printer_technology(const PrinterTechnology tech) const { return 0 != (get_printer_technology() & tech); }
 	virtual PrinterTechnology get_printer_technology() const = 0;
+    Page*                m_active_page {nullptr};
 
 	void		create_preset_tab();
     void        add_scaled_button(wxWindow* parent, ScalableButton** btn, const std::string& icon_name, 

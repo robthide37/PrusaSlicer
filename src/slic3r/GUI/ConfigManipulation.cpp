@@ -322,6 +322,7 @@ void ConfigManipulation::update_print_fff_config(DynamicPrintConfig* config, con
 
 void ConfigManipulation::toggle_print_fff_options(DynamicPrintConfig* config)
 {
+    
     bool have_perimeters = config->opt_int("perimeters") > 0;
     for (auto el : { "ensure_vertical_shell_thickness", "external_perimeter_speed", "extra_perimeters", "extra_perimeters_odd_layers",
         "external_perimeters_first", "external_perimeter_extrusion_width", "external_perimeter_extrusion_spacing","external_perimeter_extrusion_change_odd_layers",

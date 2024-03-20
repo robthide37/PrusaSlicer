@@ -1824,6 +1824,12 @@ void GUI_App::check_printer_presets()
     preset_bundle->physical_printers.load_printers_from_presets(preset_bundle->printers);
 }
 
+void GUI_App::recreate_sidebar() {
+        
+    }
+         
+         
+
 void GUI_App::recreate_GUI(const wxString& msg_name)
 {
     m_is_recreating_gui = true;
@@ -3076,6 +3082,7 @@ Plater* GUI_App::plater()
 {
     return plater_;
 }
+         
 
 const Plater* GUI_App::plater() const
 {

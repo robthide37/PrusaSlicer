@@ -1313,14 +1313,14 @@ void Tab::on_value_change(const std::string& opt_key, const boost::any& value)
                             field->set_value(script_val, false);
                     }
                 }
-                { // also check freq changed params
+                 // also check freq changed params
                     Field* field = og_freq_chng_params->get_field(preset_id);
                     if (field) {
                         boost::any script_val = this->m_script_exec.call_script_function_get_value(field->m_opt);
                         if (!script_val.empty())
                             field->set_value(script_val, false);
                     }
-                }
+                
             }
         }
     }
@@ -3332,6 +3332,7 @@ void TabPrinter::clear_pages()
 
 void TabPrinter::toggle_options()
 {
+    
     if (!m_active_page || m_presets->get_edited_preset().printer_technology() != ptFFF)
         return;
 
@@ -3352,7 +3353,7 @@ void TabPrinter::toggle_options()
     if (field) field->toggle(have_multiple_extruders);
     field = get_field("single_extruder_multi_material");
     if (field) field->toggle(have_multiple_extruders);
-
+    
     //thumbnails
     bool custom_color = m_config->opt_bool("thumbnails_custom_color");
     field = get_field("thumbnails_color");
@@ -3385,6 +3386,19 @@ void TabPrinter::toggle_options()
 
     wxString extruder_number;
     long val;
+    
+    if (m_active_page->title() == "freq_fff") {
+        size_t i = size_t(val) - 1;
+        
+        std::vector<std::string> vec = { "s_nozzle_diameter_2", "s_nozzle_diameter_1", "nozzle_diameter" };
+
+        for (auto el : vec) {
+            field = get_field(el, i);
+            if (field)
+                field->toggle(false);
+        }
+    }
+    
     if (m_active_page->title().StartsWith("Extruder ", &extruder_number) && extruder_number.ToLong(&val) &&
         val > 0 && (size_t)val <= m_extruders_count)
     {

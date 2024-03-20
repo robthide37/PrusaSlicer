@@ -244,6 +244,7 @@ public:
     void            check_printer_presets();
 
     void            recreate_GUI(const wxString& message);
+    void            recreate_sidebar();
     void            system_info();
     void            keyboard_shortcuts();
     void            change_calibration_dialog(const wxDialog* have_to_destroy = nullptr, wxDialog* new_one = nullptr);
@@ -337,6 +338,7 @@ public:
     PresetUpdater*  preset_updater{ nullptr };
     MainFrame*      mainframe{ nullptr };
     Plater*         plater_{ nullptr };
+    Sidebar*        sidebar_ {nullptr };
     std::mutex      not_modal_dialog_mutex;
     wxDialog*       not_modal_dialog = nullptr;
 
@@ -377,6 +379,7 @@ public:
     bool is_gl_version_greater_or_equal_to(unsigned int major, unsigned int minor) const { return m_opengl_mgr.get_gl_info().is_version_greater_or_equal_to(major, minor); }
     bool is_glsl_version_greater_or_equal_to(unsigned int major, unsigned int minor) const { return m_opengl_mgr.get_gl_info().is_glsl_version_greater_or_equal_to(major, minor); }
     int  GetSingleChoiceIndex(const wxString& message, const wxString& caption, const wxArrayString& choices, int initialSelection);
+    void            init_app_config();
 
 #ifdef __WXMSW__
     void            associate_3mf_files();
@@ -386,7 +389,6 @@ public:
 
 private:
     bool            on_init_inner();
-    void            init_app_config();
     // returns old config path to copy from if such exists,
     // returns an empty string if such config path does not exists or if it cannot be loaded.
     std::string     check_older_app_config(Semver current_version, bool backup);

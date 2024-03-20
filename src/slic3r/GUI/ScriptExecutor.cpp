@@ -220,20 +220,16 @@ float as_get_nozzle(std::string &key, int idx)
     std::vector<float> nozzle_diameters_values;
 
     DynamicPrintConfig conf = current_script->tab()->m_preset_bundle->full_config();
-    
+    Tab* tab_printer = wxGetApp().get_tab(Preset::TYPE_PRINTER);
     float nozzle_diameter = (float) conf.opt_float("nozzle_diameter", idx);
-
 
     size_t nozzle_diameters_count = dynamic_cast<const ConfigOptionFloats *>(conf.option("nozzle_diameter"))->values.size();
     for (int i = 0; i < nozzle_diameters_count; i++) { 
         nozzle_diameters_values.push_back(nozzle_diameter);
     }
-
-        for (float value : nozzle_diameters_values) { std::cout << value << " "; }
-
+    
     if (conf.has(key)) {
-        float one = nozzle_diameter;
-
+        
         return nozzle_diameter;
     }
     // Default
@@ -242,7 +238,6 @@ float as_get_nozzle(std::string &key, int idx)
 
 void as_set_nozzle(std::string &key, float val, int idx)
 {
-
     std::pair<const PresetCollection *, const ConfigOption *> result = get_coll(key);
 
     if (result.second == nullptr)
@@ -602,6 +597,7 @@ bool as_get_custom_string(int preset, std::string& key, std::string& result)
     result = serialized_value;
     return true;
 }
+
 void as_set_custom_string(int preset, std::string& key, std::string& val)
 {
     if (!current_script->can_set()) return;
@@ -627,13 +623,11 @@ public:
     const ConfigOption* optptr(const t_config_option_key& opt_key) const override
     {
         const ConfigOption* opt = real_storage->optptr(opt_key);
-            //if not find, try with the parent config.
+        //if not find, try with the parent config.
         if (opt == nullptr && parent != nullptr)
             opt = parent->optptr(opt_key);
         return opt;
     }
-
-
 };
 
 float as_get_computed_float(std::string& key)

@@ -76,7 +76,7 @@ public:
     Sidebar &operator=(Sidebar &&) = delete;
     Sidebar &operator=(const Sidebar &) = delete;
     ~Sidebar();
-
+    
     void init_freq_params();
     void init_filament_combo(PlaterPresetComboBox **combo, const int extr_idx);
     void remove_unused_filament_combos(const size_t current_extruder_count);
@@ -422,7 +422,8 @@ public:
 			m_plater->allow_snapshots();
 		}
 	private:
-		Plater *m_plater;
+		Plater* m_plater;
+        Sidebar* m_sidebar;
 	};
 
     bool inside_snapshot_capture();
