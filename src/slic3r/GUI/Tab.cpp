@@ -2044,6 +2044,7 @@ std::vector<Slic3r::GUI::PageShp> Tab::create_pages(std::string setting_type_nam
             bool colored = false;
             bool custom_label = false;
             std::string label_path;
+
             for (int i = 1; i < params.size() - 1; i++) {
                 if (params[i] == "simple")
                 {
@@ -2092,6 +2093,7 @@ std::vector<Slic3r::GUI::PageShp> Tab::create_pages(std::string setting_type_nam
                     option.opt.label = (params[i].substr(6, params[i].size() - 6));
                     need_to_notified_search = true;
                 }
+
                 else if (boost::starts_with(params[i], "label_width$")) {
                     option.opt.label_width = atoi(params[i].substr(12, params[i].size() - 12).c_str());
                 }
