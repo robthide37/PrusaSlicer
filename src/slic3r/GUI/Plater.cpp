@@ -396,13 +396,10 @@ void FreqChangedParams::init()
     if(tab_print != nullptr) {
         switch (nozzle_diameters) {
             case 1: pages = tab_print->create_pages("freq_fff_1_nozzle.ui");
-                break;
 
             case 2: pages = tab_print->create_pages("freq_fff_2_nozzles.ui");
-                break;
             
-            default:
-                break;
+            default: pages = tab_print->create_pages("freq_fff_1_nozzle.ui");
         }
     }
 

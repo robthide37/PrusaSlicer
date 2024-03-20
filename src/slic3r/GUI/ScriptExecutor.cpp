@@ -248,7 +248,7 @@ void as_set_nozzle(std::string &key, float val, int idx)
     if (result.second == nullptr)
         throw NoDefinitionException("error, can't find float option " + key);
 
-    DynamicPrintConfig  &config         = current_script->tab()->m_preset_bundle->full_config();
+    DynamicPrintConfig config  = current_script->tab()->m_preset_bundle->full_config();
     DynamicPrintConfig &conf   = current_script->to_update()[Preset::TYPE_PRINTER];
 
     const std::vector<double> &nozzle_diameters = config.option<ConfigOptionFloats>("nozzle_diameter")->values;
@@ -717,11 +717,9 @@ void ScriptContainer::init(const std::string& tab_key, Tab* tab)
                 throw ScriptError("Failed to create script engine.");
             }
             // The script compiler will send any compiler messages to the callback function
-#ifdef AS_MAX_PORTABILITY
-            m_script_engine->SetMessageCallback(WRAP_FN(as_message_callback), 0, AngelScript::asCALL_GENERIC);
-#else
+
             m_script_engine->SetMessageCallback(AngelScript::asFUNCTION(as_message_callback), 0, AngelScript::asCALL_CDECL);
-#endif
+            
             // Configure the script engine with the callback function
             AngelScript::RegisterScriptArray(m_script_engine.get(), false);
             AngelScript::RegisterStdString(m_script_engine.get());
@@ -733,11 +731,20 @@ void ScriptContainer::init(const std::string& tab_key, Tab* tab)
             //} else {
             //    r = engine->RegisterGlobalFunction("void print(string & in)", asFUNCTION(print), asCALL_CDECL); assert(r >= 0);
             //}
+            
 #ifdef AS_MAX_PORTABILITY
             m_script_engine.get()->RegisterGlobalFunction("void print(string &in)", WRAP_FN(as_print), AngelScript::asCALL_GENERIC);
             m_script_engine.get()->RegisterGlobalFunction("void print_float(float)", WRAP_FN(as_print_float), AngelScript::asCALL_GENERIC);
             //m_script_engine.get()->RegisterGlobalFunction("void register_key(string &in)", WRAP_FN(as_register_key), AngelScript::asCALL_GENERIC);
 
+            m_script_engine.get()->RegisterGlobalFunction("int get_int_idx(string &in)",
+                WRAP_FN(as_get_int_idx), AngelScript::asCALL_GENERIC);
+                                                          
+            m_script_engine.get()->RegisterGlobalFunction("void set_int_idx(string &in, int new_val)", WRAP_FN(as_set_int_idx), AngelScript::asCALL_GENERIC);
+            
+            m_script_engine.get()->RegisterGlobalFunction("float get_nozzle(string &in, int idx)", WRAP_FN(as_get_nozzle), AngelScript::asCALL_GENERIC);
+            m_script_engine.get()->RegisterGlobalFunction("void set_nozzle(string &in, float new_val, int idx)", WRAP_FN(as_set_nozzle), AngelScript::asCALL_GENERIC);
+            
             m_script_engine.get()->RegisterGlobalFunction("bool get_bool(string &in)", WRAP_FN(as_get_bool), AngelScript::asCALL_GENERIC);
             m_script_engine.get()->RegisterGlobalFunction("void set_bool(string &in, bool new_val)", WRAP_FN(as_set_bool), AngelScript::asCALL_GENERIC);
             m_script_engine.get()->RegisterGlobalFunction("int get_int(string &in)", WRAP_FN(as_get_int), AngelScript::asCALL_GENERIC);

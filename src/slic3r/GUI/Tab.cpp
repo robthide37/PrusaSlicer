@@ -1974,7 +1974,7 @@ std::vector<Slic3r::GUI::PageShp> Tab::create_pages(std::string setting_type_nam
             bool is_script = std::find(params.begin(), params.end(), "script") != params.end();
 
             if (is_script && !this->m_script_exec.is_intialized()) {
-                BOOST_LOG_TRIVIAL(error) << "Error: trying to creater a scripted widget for '"<< setting_type_name << "' but the .as file doesn't exist or can't be parsed";
+                BOOST_LOG_TRIVIAL(error) << "Error: trying to create a scripted widget for '"<< setting_type_name << "' but the .as file doesn't exist or can't be parsed";
                 continue;
             }
             std::string setting_id = "";
