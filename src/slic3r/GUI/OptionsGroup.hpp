@@ -98,6 +98,7 @@ using column_t = std::function<wxWindow*(wxWindow* parent, const Line&)>;
 using t_optionfield_map = std::map<t_config_option_key, t_field>;
 using t_opt_map = std::map< std::string, std::pair<std::string, int> >;
 
+
 class OptionsGroup {
 protected:
 	wxStaticBox*	stb {nullptr};
@@ -144,7 +145,7 @@ public:
 	void		clear(bool destroy_custom_ctrl = false);
 
 	// ask for each script option to recompute their value. If init is true, it will ask for get/set even if the Field isn't created.
-	void		update_script_presets(bool init = false);
+    void update_script_presets(bool init = false);
 
     Line		create_single_option_line(const Option& option, const std::string& path = std::string()) const;
     void		append_single_option_line(const Option& option, const std::string& path = std::string()) { append_line(create_single_option_line(option, path)); }
@@ -196,9 +197,10 @@ public:
 	void				set_max_win_width(int max_win_width);
 
 	bool				is_activated() { return sizer != nullptr; }
+    std::map<t_config_option_key, Option> m_options;
 
 protected:
-	std::map<t_config_option_key, Option>	m_options;
+
     wxWindow*				m_parent {nullptr};
     // vector: an entry per line
     //map : mode -> items idx in the line

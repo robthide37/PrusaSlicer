@@ -224,6 +224,8 @@ float as_get_nozzle(std::string &key, int idx)
     float nozzle_diameter = (float) conf.opt_float("nozzle_diameter", idx);
 
     size_t nozzle_diameters_count = dynamic_cast<const ConfigOptionFloats *>(conf.option("nozzle_diameter"))->values.size();
+
+
     for (int i = 0; i < nozzle_diameters_count; i++) { 
         nozzle_diameters_values.push_back(nozzle_diameter);
     }
@@ -867,6 +869,7 @@ void ScriptContainer::call_script_function_set(const ConfigOptionDef& def, const
 {
     if (value.empty() || !is_intialized())
         return;
+
     std::string func_name = ("void " + def.opt_key + "_set(" + get_type_name(def.type) + ")");
     AngelScript::asIScriptFunction* func = m_script_module->GetFunctionByDecl(func_name.c_str());
     if (func == nullptr) {
@@ -878,6 +881,7 @@ void ScriptContainer::call_script_function_set(const ConfigOptionDef& def, const
         BOOST_LOG_TRIVIAL(error) << "Error, can't create script context for function '" << func_name << "'";
         return;
     }
+
     ctx->Prepare(func);
     std::string str_arg;
     switch (def.type) {

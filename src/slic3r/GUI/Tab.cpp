@@ -1090,12 +1090,26 @@ void Tab::reload_config()
 {
     if (m_active_page)
         m_active_page->reload_config();
+ 
+    PrinterTechnology   pt                  = get_printer_technology();
+    ConfigOptionsGroup *og_freq_chng_params = wxGetApp().sidebar().og_freq_chng_params(pt);
+
     //also reload scripted that aren't on the active page.
     for (PageShp page : m_pages) {
         if (page.get() != m_active_page) {
+            DynamicPrintConfig config = static_cast<TabPrinter *>(this)->m_preset_bundle->full_config();
+            if (config.has("nozzle_diameter")) {
+                size_t nozzle_diameters_count = static_cast<ConfigOptionFloats *>(config.option("nozzle_diameter"))->values.size();
+
+                Field *field = og_freq_chng_params->get_field("s_nozzle_diameter_2");
+                if (field) {
+                    field->toggle(nozzle_diameters_count == 2);
+                }
+
             for (auto group : page->m_optgroups) {
                 // ask for activated the preset even if the gui isn't created, as the script may want to modify the conf.
                 group->update_script_presets(true);
+                }
             }
         }
     }
@@ -1313,14 +1327,14 @@ void Tab::on_value_change(const std::string& opt_key, const boost::any& value)
                             field->set_value(script_val, false);
                     }
                 }
-                 // also check freq changed params
+                  {// also check freq changed params
                     Field* field = og_freq_chng_params->get_field(preset_id);
                     if (field) {
                         boost::any script_val = this->m_script_exec.call_script_function_get_value(field->m_opt);
                         if (!script_val.empty())
                             field->set_value(script_val, false);
                     }
-                
+                }
             }
         }
     }
@@ -1656,8 +1670,9 @@ void Tab::update_frequently_changed_parameters()
 
 void Tab::update_script_presets()
 {
-    for (PageShp& page : m_pages)
-        page->update_script_presets();
+    for (PageShp& page : m_pages) {
+        page->update_script_presets(); 
+    }
 }
 
 t_change Tab::set_or_add(t_change previous, t_change toadd) {
@@ -2090,7 +2105,7 @@ std::vector<Slic3r::GUI::PageShp> Tab::create_pages(std::string setting_type_nam
                     // store current label into full_label if no full_label to prevent rpoblem in the rest of the gui (all empty).
                     if (option.opt.full_label.empty())
                         option.opt.full_label = option.opt.label;
-                    option.opt.label = (params[i].substr(6, params[i].size() - 6));
+                    option.opt.label =  (params[i].substr(6, params[i].size() - 6) );
                     need_to_notified_search = true;
                 }
 
@@ -5001,8 +5016,10 @@ void Page::reload_config()
 
 void Page::update_script_presets()
 {
-    for (auto group : m_optgroups)
+    for (auto group : m_optgroups) {
+
         group->update_script_presets();
+        }
 }
 
 void Page::update_visibility(ConfigOptionMode mode, bool update_contolls_visibility)

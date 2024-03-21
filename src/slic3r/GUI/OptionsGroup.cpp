@@ -583,6 +583,7 @@ void OptionsGroup::clear_fields_except_of(const std::vector<std::string> left_fi
 
 void OptionsGroup::on_change_OG(const t_config_option_key& opt_id, const boost::any& value) {
     auto it = m_options.find(opt_id);
+
     if (it != m_options.end() && it->second.opt.is_script && it->second.script) {
         it->second.script->call_script_function_set(it->second.opt, value);
     }else if (m_on_change != nullptr)
@@ -591,9 +592,12 @@ void OptionsGroup::on_change_OG(const t_config_option_key& opt_id, const boost::
 
 void OptionsGroup::update_script_presets(bool init) {
     for (auto& key_opt : m_options) {
+
         if (key_opt.second.opt.is_script) {
             if (init || get_field(key_opt.first)) {
+
                 boost::any val = key_opt.second.script->call_script_function_get_value(key_opt.second.opt);
+
                 if (val.empty()) {
                     MessageDialog(nullptr, "Error, can't find the script to get the value for the widget '" + key_opt.first + "'", _L("Error"), wxOK | wxICON_ERROR).ShowModal();
                 } else {
@@ -763,6 +767,7 @@ void ConfigOptionsGroup::reload_config()
 		// index in the vector option, zero for scalars
 		int 			   opt_index = kvp.second.second;
 		const ConfigOptionDef &option = m_options.at(opt_id).opt;
+
 		this->set_value(opt_id, config_value(opt_key, opt_index, option.gui_flags == "serialized"));
 	}
     update_script_presets();

@@ -397,19 +397,13 @@ void FreqChangedParams::init()
 
     if(tab_print != nullptr) {
         pages.clear();
-        
-        if (nozzle_diameters == 1) {
-            pages = tab_print->create_pages("freq_fff_1_nozzle.ui");
-
-        } else if (nozzle_diameters == 2) {
-            pages = tab_print->create_pages("freq_fff_2_nozzles.ui");
-        }
+        pages = tab_print->create_pages("freq_fff_2_nozzles.ui");
     }
 
     if (!pages.empty()) {        
         m_og->set_config(config);
         m_og->hide_labels();
-        
+
         m_og->m_on_change = Tab::set_or_add(m_og->m_on_change, [tab_print, this](t_config_option_key opt_key, boost::any value)
             {
                 Option opt = this->m_og->get_option(opt_key);
@@ -6682,37 +6676,8 @@ void Plater::on_extruders_change(size_t num_extruders)
     Tab* tab_printer = wxGetApp().get_tab(Preset::TYPE_PRINTER);
     DynamicPrintConfig config = tab_printer->m_preset_bundle->full_config();
     
-    //wxGetApp().sidebar().init_freq_params();
-    
-    if (num_extruders == 1) {
-       // tab_printer->m_active_page->m_title == "";
-    }
-    
-    if (m_should_recreate){
-        wxGetApp().recreate_sidebar();
-        /* This does not work
-        wxGetApp().init_app_config();
+   
 
-        MainFrame *old_main_frame = wxGetApp().mainframe;
-        wxGetApp().mainframe = new MainFrame();
-        
-        old_main_frame->Destroy();
-        wxGetApp().mainframe->select_tab(MainFrame::TabPosition::tpLastPlater);
-        wxGetApp().SetTopWindow(wxGetApp().mainframe);
-        wxGetApp().load_current_presets();
-        wxGetApp().mainframe->Show();
-        wxGetApp().obj_list()->set_min_height();
-        wxGetApp().update_mode();
-         */
-
-        Sidebar *old_side_bar = this->p->sidebar;
-        this->p->sidebar = new Sidebar();
-        wxGetApp().plater_->sidebar();
-        
-        
-    }
-    
-    m_should_recreate = true;
 
     auto& choices = sidebar().combos_filament();
 
@@ -6734,7 +6699,8 @@ void Plater::on_extruders_change(size_t num_extruders)
     }
 
     // remove unused choices if any
-    
+    sidebar().remove_unused_filament_combos(num_extruders);
+    sidebar().Refresh();
     sidebar().Layout();
     sidebar().scrolled_panel()->Refresh();
 }

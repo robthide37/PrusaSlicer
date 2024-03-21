@@ -326,7 +326,7 @@ void MainFrame::update_icon() {
             m_tabpanel->SetPageImage(0, 0);
             m_tabpanel->SetPageImage(1, 1);
             m_tabpanel->SetPageImage(2, 2);
-            m_tabpanel->SetPageImage(3, 2);
+            m_tabpanel->SetPageImage(3, 3);
             m_tabpanel->SetPageImage(4, m_plater->printer_technology() == PrinterTechnology::ptSLA ? 6 : 4);
             m_tabpanel->SetPageImage(5, m_plater->printer_technology() == PrinterTechnology::ptSLA ? 7 : 5);
         }
@@ -1051,9 +1051,9 @@ void MainFrame::init_tabpanel()
     // icons for m_tabpanel tabs
     wxImageList* img_list = nullptr;
     if (icon_size >= 8) {
-        std::vector<std::string> icon_list =  { "tab_editor_menu", "tab_preview_menu", "tab_device", "cog", "spool_cog",  "printer_cog",  "resin_cog",    "sla_printer_cog" };
+        std::vector<std::string> icon_list =  { "tab_editor_menu", "layers", "tab_preview_menu", "tab_device_active", "cog", "spool_cog",  "printer_cog",  "resin_cog",    "sla_printer_cog" };
         if (icon_size < 16)
-            icon_list = {"tab_editor_menu",  "tab_preview_menu", "tab_device", "cog",
+            icon_list = {"tab_editor_menu", "layers", "tab_preview_menu", "tab_device_active", "cog",
                          "spool",       "printer", "resin",        "sla_printer"};
         for (std::string icon_name : icon_list) {
             const wxBitmap& bmp = create_scaled_bitmap(icon_name, this, icon_size);
@@ -1063,22 +1063,6 @@ void MainFrame::init_tabpanel()
         }
     }
     m_tabpanel->AssignImageList(img_list);
-
-
-        m_tabpanel->Bind(wxEVT_NOTEBOOK_PAGE_CHANGING, [this](wxBookCtrlEvent &e) {
-        int old_sel = e.GetOldSelection();
-        int new_sel = e.GetSelection();
-            if (new_sel == 3 && wxGetApp().preset_bundle != nullptr) {
-                auto     cfg = wxGetApp().preset_bundle->printers.get_edited_preset().config;
-                wxString url = "";
-                if (url.empty()) {
-                    wxString url = wxString::Format("file://%s/web/orca/missing_connection.html",
-                                                    from_u8(resources_dir()));
-                    //m_printer_view->load_url(url);
-                }
-            }
-        
-    });
 
 #endif
     
@@ -1121,32 +1105,35 @@ void MainFrame::init_tabpanel()
                 //get the selected button, not the selected panel
                 bt_idx_sel = notebook->GetBtSelection();
             }
-            if (bt_idx_sel == 0) {
-                this->m_plater->select_view_3D("3D");
-            } else if (bt_idx_sel == 1) {
-                if (this->m_plater->get_force_preview() != Preview::ForceState::ForceExtrusions) {
-                    this->m_plater->set_force_preview(Preview::ForceState::ForceExtrusions);
-                    this->m_plater->select_view_3D("Preview");
-                    this->m_plater->refresh_print();
-                } else
-                    this->m_plater->select_view_3D("Preview");
-            } else if (bt_idx_sel == 2) {
-                if (this->m_plater->get_force_preview() != Preview::ForceState::ForceGcode) {
-                    this->m_plater->set_force_preview(Preview::ForceState::ForceGcode);
-                    this->m_plater->select_view_3D("Preview");
-                    this->m_plater->refresh_print();
-                }
-            } else if (bt_idx_sel == 3) {
 
-                DynamicPrintConfig *selected_printer_config = wxGetApp().preset_bundle->physical_printers.get_selected_printer_config();
-                if (!selected_printer_config) {
-                    // No physical printer found
-                    wxMessageBox("No physical printer found.", "Warning", wxICON_WARNING | wxOK);
-                  }
+            switch (bt_idx_sel) {
+                case 0: 
+                    this->m_plater->select_view_3D("3D");
+                case 1:
+                    if (this->m_plater->get_force_preview() != Preview::ForceState::ForceExtrusions) {
+                        this->m_plater->set_force_preview(Preview::ForceState::ForceExtrusions);
+                        this->m_plater->select_view_3D("Preview");
+                        this->m_plater->refresh_print();
+                    } else
+                        this->m_plater->select_view_3D("Preview");
+                     break;
+                case 2:
+                    if (this->m_plater->get_force_preview() != Preview::ForceState::ForceGcode) {
+                        this->m_plater->set_force_preview(Preview::ForceState::ForceGcode);
+                        this->m_plater->select_view_3D("Preview");
+                        this->m_plater->refresh_print();
+                    }
+                    break;
+                case 3:
+                    DynamicPrintConfig *selected_printer_config = wxGetApp().preset_bundle->physical_printers.get_selected_printer_config();
+                    if (!selected_printer_config) {
+                        // No physical printer found
+                        wxMessageBox("No physical printer found.", "Warning", wxICON_WARNING | wxOK);
+                    }
 
-                m_webView->Show();
-                m_webView->Enable();
-
+                    m_webView->Show();
+                    m_webView->Enable();
+                    break;
             }
 
             m_last_selected_plater_tab = bt_idx_sel;

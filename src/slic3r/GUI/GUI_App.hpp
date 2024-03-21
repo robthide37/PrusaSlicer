@@ -244,7 +244,6 @@ public:
     void            check_printer_presets();
 
     void            recreate_GUI(const wxString& message);
-    void            recreate_sidebar();
     void            system_info();
     void            keyboard_shortcuts();
     void            change_calibration_dialog(const wxDialog* have_to_destroy = nullptr, wxDialog* new_one = nullptr);
