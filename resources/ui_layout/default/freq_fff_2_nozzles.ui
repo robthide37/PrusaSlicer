@@ -16,12 +16,11 @@ group:freq_settings_event:no_title:no_search:
         setting:label$Bottom :bottom_solid_layers
 	end_line
 	line:
-        setting:label$Perimeters :full_width:perimeters
+        setting:label$Perimeters:width$8:perimeters
 	end_line
 	line:
 		setting:simple:script:float:depends$nozzle_diameter[0]:label$Tool [0]:tooltip$Value for nozzle[0]:full_width:s_nozzle_diameter_1
+		setting:simple:script:float:depends$nozzle_diameter[1]:label$Tool [1]:tooltip$Value for nozzle[1]:full_width:s_nozzle_diameter_2
 	end_line
-	line:
-	    setting:simple:script:float:depends$nozzle_diameter[1]:label$Tool [1]:tooltip$Value for nozzle[1]:full_width:s_nozzle_diameter_2
-	end_line
+
     
