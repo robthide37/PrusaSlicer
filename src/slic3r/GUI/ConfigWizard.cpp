@@ -25,6 +25,7 @@
 #include <wx/filefn.h>
 #include <wx/wupdlock.h>
 #include <wx/debug.h>
+#include <wx/hyperlink.h>
 
 #ifdef _MSW_DARK_MODE
 #include <wx/msw/dark_mode.h>
@@ -560,6 +561,34 @@ PagePrinters::PagePrinters(ConfigWizard *parent,
 
         if (std::find_if(vendor.models.begin(), vendor.models.end(), filter) == vendor.models.end()) {
             continue;
+        }
+
+        static bool warningAdded = false;
+        
+        if (!warningAdded && vendor.name == "CR-3D") {
+            wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+
+            wxStaticText *warningText = new wxStaticText(this, wxID_ANY, "Warning: ");
+            warningText->SetFont(wxFont(wxFontInfo(10)).Bold());
+            warningText->SetForegroundColour(wxColour(255, 0, 0));
+            sizer->Add(warningText);
+
+            wxStaticText *infoText =
+                new wxStaticText(this,
+                                 wxID_ANY,
+                                 "Older devices manufactured before November 2023 require absolute extrusion.  ");
+            infoText->SetFont(wxFont(wxFontInfo(10).Bold()));
+            sizer->Add(infoText);
+
+            wxHyperlinkCtrl *hyperlink = new wxHyperlinkCtrl(this, wxID_ANY, "Find more information here.",
+                                                             "https://github.com/CR-3D/SliCR-3D-V2/blob/master/resources/profiles/CR3D/ReadMe.md", wxDefaultPosition, wxDefaultSize,
+                                                             wxHL_DEFAULT_STYLE | wxNO_BORDER);
+            hyperlink->SetNormalColour(wxColour(0, 0, 255));
+            hyperlink->SetFont(wxFont(wxFontInfo(9).FaceName("Arial")));
+            sizer->Add(hyperlink, 0, wxALIGN_CENTER_VERTICAL);
+
+            append(sizer);
+          warningAdded = true;
         }
 
         const auto picker_title = family.empty() ? wxString() : from_u8((boost::format(_utf8(L("%s Family"))) % family).str());
