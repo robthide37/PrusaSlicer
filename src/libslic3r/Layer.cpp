@@ -204,6 +204,7 @@ void Layer::make_perimeters()
                 && config.perimeter_loop            == other_config.perimeter_loop
                 && config.perimeter_loop_seam       == other_config.perimeter_loop_seam
                 && config.perimeter_overlap         == other_config.perimeter_overlap
+                && config.perimeter_reverse == other_config.perimeter_reverse
                 && config.perimeter_speed           == other_config.perimeter_speed // it os mandatory? can't this be set at gcode.cpp?
                 && config.small_perimeter_speed     == other_config.small_perimeter_speed
                 && config.small_perimeter_min_length == other_config.small_perimeter_min_length

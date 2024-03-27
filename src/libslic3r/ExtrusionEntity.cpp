@@ -483,6 +483,54 @@ void ExtrusionVisitorRecursive::use(ExtrusionEntityCollection& collection) {
     }
 }
 
+void HasRoleVisitor::use(const ExtrusionMultiPath &multipath)
+{
+    for (const ExtrusionPath &path : multipath.paths) {
+        path.visit(*this);
+        if (found)
+            return;
+    }
+}
+void HasRoleVisitor::use(const ExtrusionMultiPath3D &multipath3D)
+{
+    for (const ExtrusionPath3D &path3D : multipath3D.paths) {
+        path3D.visit(*this);
+        if (found)
+            return;
+    }
+}
+void HasRoleVisitor::use(const ExtrusionLoop &loop)
+{
+    for (const ExtrusionPath &path : loop.paths) {
+        path.visit(*this);
+        if (found)
+            return;
+    }
+}
+void HasRoleVisitor::use(const ExtrusionEntityCollection &collection)
+{
+    for (const ExtrusionEntity *entity : collection.entities()) {
+        entity->visit(*this);
+        if (found)
+            return;
+    }
+}
+bool HasRoleVisitor::search(const ExtrusionEntity &entity, HasRoleVisitor &&visitor)
+{
+    entity.visit(visitor);
+    return visitor.found;
+}
+bool HasRoleVisitor::search(const ExtrusionEntitiesPtr &entities, HasRoleVisitor &&visitor)
+{
+    for (ExtrusionEntity *ptr : entities) {
+        ptr->visit(visitor);
+        if (visitor.found)
+            return true;
+    }
+    return visitor.found;
+}
+
+
 //class ExtrusionTreeVisitor : ExtrusionVisitor {
 //public:
 //    //virtual void use(ExtrusionEntity &entity) { assert(false); };

@@ -2,6 +2,8 @@
 
 #include "BridgeDetector.hpp"
 #include "ClipperUtils.hpp"
+#include "ExtrusionEntity.hpp"
+
 #include "ExtrusionEntityCollection.hpp"
 #include "Geometry.hpp"
 #include "ShortestPath.hpp"
@@ -2524,6 +2526,13 @@ ExtrusionEntityCollection PerimeterGenerator::_traverse_loops(
             better_chain.push_back(idx);
     }
 
+    const bool reverse_contour = (this->layer->id() == 0 && this->object_config->brim_width.value > 0) ||
+                                 (this->config->external_perimeters_first.value &&
+                                  this->config->external_perimeters_nothole.value);
+    const bool reverse_hole = (this->layer->id() == 0 && this->object_config->brim_width_interior.value > 0) ||
+                              (this->config->external_perimeters_first.value &&
+                               this->config->external_perimeters_hole.value);
+
     //move from coll to coll_out and getting children of each in the same time. (deep first)
     for (const std::pair<size_t, bool> &idx : better_chain) {
         
@@ -2564,21 +2573,58 @@ ExtrusionEntityCollection PerimeterGenerator::_traverse_loops(
             ExtrusionEntityCollection children = this->_traverse_loops(loop.children, thin_walls, has_overhang ? 1 : count_since_overhang < 0 ? -1 : (count_since_overhang+1));
             coll_out.set_entities().reserve(coll_out.entities().size() + children.entities().size() + 1);
             coll[idx.first] = nullptr;
-            if (loop.is_contour) {
-                //note: this->layer->id() % 2 == 1 already taken into account in the is_steep_overhang compute (to save time).
-                if (loop.is_steep_overhang && this->layer->id() % 2 == 1)
+
+            bool has_steep_overhangs_this_loop = false;
+            if (loop.is_steep_overhang && this->layer->id() % 2 == 1 && !config->perimeter_reverse) {
+                has_steep_overhangs_this_loop = HasRoleVisitor::search(*eloop, HasThisRoleVisitor{erOverhangPerimeter});
+            }
+
+            if ((loop.is_contour && !reverse_contour) || (!loop.is_contour && reverse_hole)) {
+                // note: this->layer->id() % 2 == 1 already taken into account in the is_steep_overhang compute (to
+                // save time).
+                // if contour: reverse if steep_overhang & odd. if hole: the opposite
+                bool clockwise = ((config->perimeter_reverse || has_steep_overhangs_this_loop) &&
+                                  this->layer->id() % 2 == 1) == loop.is_contour;
+                if (clockwise)
                     eloop->make_clockwise();
                 else
                     eloop->make_counter_clockwise();
-                coll_out.append(std::move(children.entities()));
-                coll_out.append(*eloop);
+                // ensure that our children are printed before us
+                if (!children.empty()) {
+                    ExtrusionEntityCollection print_child_beforeplz;
+                    print_child_beforeplz.set_can_sort_reverse(false, false);
+                    if (children.entities().size() > 1 && (children.can_reverse() || children.can_sort())) {
+                        print_child_beforeplz.append(children);
+                    } else {
+                        print_child_beforeplz.append_move_from(children);
+                    }
+                    print_child_beforeplz.append(*eloop);
+                    coll_out.append(std::move(print_child_beforeplz));
+                } else {
+                    coll_out.append(*eloop);
+                }
             } else {
-                if (loop.is_steep_overhang && this->layer->id() % 2 == 1)
+                bool counter_clockwise = ((config->perimeter_reverse || has_steep_overhangs_this_loop) &&
+                                          this->layer->id() % 2 == 1) != loop.is_contour;
+                // if hole: reverse if steep_overhang & odd. if contour: the opposite
+                if (counter_clockwise)
                     eloop->make_counter_clockwise();
                 else
                     eloop->make_clockwise();
-                coll_out.append(*eloop);
-                coll_out.append(std::move(children.entities()));
+                // ensure that our children are printed after us
+                if (!children.empty()) {
+                    ExtrusionEntityCollection print_child_beforeplz;
+                    print_child_beforeplz.set_can_sort_reverse(false, false);
+                    print_child_beforeplz.append(*eloop);
+                    if (children.entities().size() > 1 && (children.can_reverse() || children.can_sort())) {
+                        print_child_beforeplz.append(children);
+                    } else {
+                        print_child_beforeplz.append_move_from(children);
+                    }
+                    coll_out.append(std::move(print_child_beforeplz));
+                } else {
+                    coll_out.append(*eloop);
+                }
             }
         }
     }
@@ -2712,7 +2758,7 @@ ExtrusionEntityCollection PerimeterGenerator::_traverse_extrusions(std::vector<P
                 ExtrusionLoop extrusion_loop(std::move(paths), loop_role);
                 // Restore the orientation of the extrusion loop.
                 //TODO: use if (loop.is_steep_overhang && this->layer->id() % 2 == 1) to make_clockwise => need to detect is_steep_overhang on the arachne path
-                if (pg_extrusion.is_contour)
+                if ((config->perimeter_reverse /* || pg_extrusion.is_steep_overhang*/ && this->layer->id() % 2 == 1) == pg_extrusion.is_contour)
                     extrusion_loop.make_counter_clockwise();
                 else
                     extrusion_loop.make_clockwise();

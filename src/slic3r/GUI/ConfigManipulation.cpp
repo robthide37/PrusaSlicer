@@ -342,16 +342,27 @@ void ConfigManipulation::toggle_print_fff_options(DynamicPrintConfig* config)
 
 
     for (auto el : {"perimeter_loop", "extra_perimeters_overhangs", "no_perimeter_unsupported_algo",
-        "thin_perimeters", "overhangs_reverse", "perimeter_round_corners"})
+                    "thin_perimeters", "perimeter_round_corners"})
         toggle_field(el, have_perimeters && !have_arachne);
 
     toggle_field("only_one_perimeter_top", have_perimeters); // with arachne, it will only do it for the last layer
     toggle_field("only_one_perimeter_first_layer", config->opt_int("perimeters") > 1);
+
     toggle_field("overhangs_width", config->option<ConfigOptionFloatOrPercent>("overhangs_width_speed")->value > 0);
+
+    bool have_overhangs_reverse = have_perimeters && !have_arachne && !config->opt_bool("perimeter_reverse");
+    toggle_field("overhangs_reverse", have_overhangs_reverse);
+
+    toggle_field("overhangs_reverse_threshold", have_overhangs_reverse && config->opt_bool("overhangs_reverse"));
+
     toggle_field("overhangs_reverse_threshold", have_perimeters && config->opt_bool("overhangs_reverse"));
+
     toggle_field("overhangs_speed_enforce", have_perimeters && !config->opt_bool("perimeter_loop"));
+
     toggle_field("min_width_top_surface", have_perimeters && config->opt_bool("only_one_perimeter_top") && !have_arachne);
+
     toggle_field("thin_perimeters_all", have_perimeters && config->option("thin_perimeters")->getFloat() != 0 && !have_arachne);
+
     bool have_thin_wall = !have_arachne && have_perimeters;
     toggle_field("thin_walls", have_thin_wall);
     for (auto el : { "thin_walls_min_width", "thin_walls_overlap", "thin_walls_merge" })

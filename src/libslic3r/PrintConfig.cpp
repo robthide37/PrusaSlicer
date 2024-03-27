@@ -3946,9 +3946,12 @@ void PrintConfigDef::init_fff_params()
 
     def = this->add("overhangs_reverse", coBool);
     def->label = L("Reverse on odd");
-    def->full_label = L("Overhang reversal");
+    def->full_label = L("Overhang reversal on even layers");
     def->category = OptionCategory::perimeter;
-    def->tooltip = L("Extrude perimeters that have a part over an overhang in the reverse direction on odd layers. This alternating pattern can drastically improve steep overhang."
+    def->tooltip    = L(
+        "Extrude perimeters that have an overhanging part in the reverse direction on even layers (not on odd layers "
+        "like the first one)."
+        " This alternating pattern can significantly improve steep overhangs."
         "\n!! this is a very slow algorithm (it uses the same results as extra_perimeters_overhangs) !!");
     def->mode = comAdvancedE | comSuSi;
     def->set_default_value(new ConfigOptionBool(false));
@@ -4145,6 +4148,18 @@ void PrintConfigDef::init_fff_params()
     def->max = 100;
     def->mode = comExpert | comSuSi;
     def->set_default_value(new ConfigOptionPercent(100));
+
+    // Perimeter reverse for even layers
+    def = this->add("perimeter_reverse", coBool);
+    def->label = L("Perimeter reversal on even layers");
+    def->category = OptionCategory::perimeter;
+    def->tooltip   = L("On even layers, all perimeter loops are reversed (it disables the overhang reversal, so it "
+                     "doesn't double-reverse)."
+                     "That setting will likely create defects on the perimeters, so it's only useful is for "
+                     "materials that have some direction-dependent properties (stress lines).");
+    def->mode      = comExpert | comSuSi;
+    def->set_default_value(new ConfigOptionBool(false));
+
 
     def = this->add("perimeter_round_corners", coBool);
     def->label = L("Round corners");
@@ -7845,6 +7860,7 @@ std::unordered_set<std::string> prusa_export_to_remove_keys = {
 "perimeter_loop_seam",
 "perimeter_loop",
 "perimeter_overlap",
+"perimeter_reverse",
 "perimeter_round_corners",
 "print_extrusion_multiplier",
 "print_retract_length",
@@ -8277,6 +8293,7 @@ void DynamicPrintConfig::normalize_fdm()
             this->opt<ConfigOptionBool>("extra_perimeters_overhangs", true)->value = false;
             this->opt<ConfigOptionBool>("extra_perimeters_odd_layers", true)->value = false;
             this->opt<ConfigOptionBool>("overhangs_reverse", true)->value = false; 
+            this->opt<ConfigOptionBool>("perimeter_reverse", true)->value = false;
         }
     }
 
@@ -8888,6 +8905,8 @@ std::string validate(const FullPrintConfig& cfg)
             return "Can't make more than one perimeter when spiral vase mode is enabled";
         if (cfg.overhangs_reverse)
             return "Can't reverse the direction of the perimeter every layer when spiral vase mode is enabled";
+        if (cfg.perimeter_reverse)
+            return "Can´t reverse the direction of perimeters every layer when spiral vase mode is enabled";
     }
 
     // extrusion widths

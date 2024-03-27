@@ -644,6 +644,29 @@ public:
     }
 };
 
+class HasRoleVisitor : public ExtrusionVisitorConst
+{
+public:
+    bool        found = false;
+    void        use(const ExtrusionMultiPath &multipath) override;
+    void        use(const ExtrusionMultiPath3D &multipath3D) override;
+    void        use(const ExtrusionLoop &loop) override;
+    void        use(const ExtrusionEntityCollection &collection) override;
+    static bool search(const ExtrusionEntity &entity, HasRoleVisitor &&visitor);
+    static bool search(const ExtrusionEntitiesPtr &entities, HasRoleVisitor &&visitor);
+};
+struct HasInfillVisitor : public HasRoleVisitor
+{
+    void default_use(const ExtrusionEntity &entity) override { found = is_infill(entity.role()); };
+};
+
+struct HasThisRoleVisitor : public HasRoleVisitor
+{
+    ExtrusionRole role_to_find;
+    HasThisRoleVisitor(ExtrusionRole role) : role_to_find(role) {}
+    void default_use(const ExtrusionEntity &entity) override { found = entity.role() == role_to_find; };
+};
+
 class ExtrusionLength : public ExtrusionVisitorConst {
     double dist;
 public:
