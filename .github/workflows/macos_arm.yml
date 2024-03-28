@@ -5,6 +5,7 @@ on:
     branches:
       - rc
       - debug_macos
+      - master
 
 jobs:
   build:
